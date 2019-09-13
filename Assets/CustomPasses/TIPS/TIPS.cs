@@ -48,6 +48,12 @@ class TIPS : CustomPass
 
     public Material material;
 
+    Material    fullscreenMaterial;
+    RTHandle    tipsBuffer; // additional render target for compositing the custom and camera color buffers
+
+    int         compositingPass;
+    int         copyPass;
+
     // It can be used to configure render targets and their clear state. Also to create temporary render target textures.
     // When empty this render pass will render to the active camera render target.
     // You should never call CommandBuffer.SetRenderTarget. Instead call <c>ConfigureTarget</c> and <c>ConfigureClear</c>.
@@ -55,18 +61,33 @@ class TIPS : CustomPass
     protected override void Setup(ScriptableRenderContext renderContext, CommandBuffer cmd)
     {
         material = Resources.Load<Material>("Shader Graphs_TIPS_Effect");
+        fullscreenMaterial = CoreUtils.CreateEngineMaterial("FullScreen/TIPS");
+        tipsBuffer = RTHandles.Alloc(Vector2.one, TextureXR.slices, dimension: TextureXR.dimension, colorFormat: GraphicsFormat.R16G16B16A16_SFloat, useDynamicScale: true, name: "TIPS Buffer");
+
+        compositingPass = fullscreenMaterial.FindPass("Compositing");
+        copyPass = fullscreenMaterial.FindPass("Copy");
     }
 
     protected override void Execute(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult)
     {
-        if (mesh == null || material == null)
+        if (mesh == null || material == null || fullscreenMaterial == null)
             return ;
 
-        Matrix4x4 trs = Matrix4x4.TRS(camera.camera.transform.position, Quaternion.identity, Vector3.one * size);
+        Transform cameraTransform = camera.camera.transform;
+        Matrix4x4 trs = Matrix4x4.TRS(cameraTransform.position, cameraTransform.rotation, Vector3.one * size);
         cmd.DrawMesh(mesh, trs, material, 0, material.FindPass("ForwardOnly"));
+
+        fullscreenMaterial.SetTexture("_TIPSBuffer", tipsBuffer);
+        CoreUtils.SetRenderTarget(cmd, tipsBuffer, ClearFlag.All);
+        CoreUtils.DrawFullScreen(cmd, fullscreenMaterial, shaderPassId: compositingPass);
+
+        SetCameraRenderTarget(cmd);
+        CoreUtils.DrawFullScreen(cmd, fullscreenMaterial, shaderPassId: copyPass);
     }
 
     protected override void Cleanup()
     {
+        CoreUtils.Destroy(fullscreenMaterial);
+        tipsBuffer.Release();
     }
 }

@@ -17,6 +17,7 @@ class Blur : CustomPass
     // The render pipeline will ensure target setup and clearing happens in an performance manner.
     protected override void Setup(ScriptableRenderContext renderContext, CommandBuffer cmd)
     {
+        Debug.Log("Setup !");
         fullscreenMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("FullScreen/Blur"));
         blurBuffer = RTHandles.Alloc(Vector2.one, TextureXR.slices, dimension: TextureXR.dimension, colorFormat: GraphicsFormat.R16G16B16A16_SFloat, useDynamicScale: true, name: "BlurBuffer");
     }
@@ -39,6 +40,8 @@ class Blur : CustomPass
 
     protected override void Cleanup()
     {
+        Debug.Log("Cleanup");
+        
         CoreUtils.Destroy(fullscreenMaterial);
         blurBuffer.Release();
     }
