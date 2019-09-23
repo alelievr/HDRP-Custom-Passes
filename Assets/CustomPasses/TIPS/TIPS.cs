@@ -17,15 +17,18 @@ class TIPSEditor : CustomPassDrawer
 
         public static GUIContent mesh = new GUIContent("Mesh", "Mesh used for the scanner effect.");
         public static GUIContent size = new GUIContent("Size", "Size of the effect.");
+        public static GUIContent rotationSpeed = new GUIContent("Speed", "Speed of rotation.");
     }
 
     SerializedProperty		m_Mesh;
     SerializedProperty		m_Size;
+    SerializedProperty		m_RotationSpeed;
 
     protected override void Initialize(SerializedProperty customPass)
     {
         m_Mesh = customPass.FindPropertyRelative("mesh");
         m_Size = customPass.FindPropertyRelative("size");
+        m_RotationSpeed = customPass.FindPropertyRelative("rotationSpeed");
     }
 
     protected override void DoPassGUI(SerializedProperty customPass, Rect rect)
@@ -34,9 +37,11 @@ class TIPSEditor : CustomPassDrawer
         rect.y += Styles.defaultLineSpace;
 
         m_Size.floatValue = EditorGUI.Slider(rect, Styles.size, m_Size.floatValue, 0.1f, 100f);
+        rect.y += Styles.defaultLineSpace;
+        m_RotationSpeed.floatValue = EditorGUI.Slider(rect, Styles.rotationSpeed, m_RotationSpeed.floatValue, 0f, 30f);
     }
 
-    protected override float GetPassHeight(SerializedProperty customPass) => Styles.defaultLineSpace * 2;
+    protected override float GetPassHeight(SerializedProperty customPass) => Styles.defaultLineSpace * 3;
 }
 
 #endif
@@ -45,6 +50,7 @@ class TIPS : CustomPass
 {
     public Mesh     mesh = null;
     public float    size = 5;
+    public float    rotationSpeed = 5;
 
     public Material material;
 
@@ -74,7 +80,7 @@ class TIPS : CustomPass
             return ;
 
         Transform cameraTransform = camera.camera.transform;
-        Matrix4x4 trs = Matrix4x4.TRS(cameraTransform.position, cameraTransform.rotation, Vector3.one * size);
+        Matrix4x4 trs = Matrix4x4.TRS(cameraTransform.position, Quaternion.Euler(0f, Time.realtimeSinceStartup * rotationSpeed, Time.realtimeSinceStartup * rotationSpeed * 0.5f), Vector3.one * size);
         cmd.DrawMesh(mesh, trs, material, 0, material.FindPass("ForwardOnly"));
 
         fullscreenMaterial.SetTexture("_TIPSBuffer", tipsBuffer);
