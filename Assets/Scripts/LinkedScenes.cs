@@ -16,8 +16,10 @@ public class LinkedScenes : MonoBehaviour
     SceneAsset[] linkedScenes;
     
 #if UNITY_EDITOR
-    void OnEnable()
+    void Start()
     {
+        if (Application.isPlaying) return;
+        
         if (linkedScenes != null && linkedScenes.Length > 0)
         {
             for (int i = 0; i < linkedScenes.Length; ++i)
