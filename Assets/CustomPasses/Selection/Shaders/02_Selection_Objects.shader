@@ -2,8 +2,7 @@
 {
     Properties
     {
-        _Color("Color", Color) = (1,1,1,1)
-        _ColorMap("ColorMap", 2D) = "white" {}
+        _MaxDistance("Max Distance", float) = 15
 
         // Transparency
         _AlphaCutoff("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
@@ -56,10 +55,8 @@
             #define VARYINGS_NEED_TANGENT_TO_WORLD
             
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/RenderPass/CustomPass/CustomPassRenderers.hlsl"
-
-            TEXTURE2D(_ColorMap);
-            float4 _ColorMap_ST;
-            float4 _Color;
+            
+            float _MaxDistance;
 
             // If you need to modify the vertex datas, you can uncomment this code
             // Note: all the transformations here are done in object space
@@ -73,20 +70,15 @@
             // Put the code to render the objects in your custom pass in this function
             void GetSurfaceAndBuiltinData(FragInputs fragInputs, float3 viewDirection, inout PositionInputs posInput, out SurfaceData surfaceData, out BuiltinData builtinData)
             {
-                float2 colorMapUv = TRANSFORM_TEX(fragInputs.texCoord0.xy, _ColorMap);
-                float4 result = SAMPLE_TEXTURE2D(_ColorMap, s_trilinear_clamp_sampler, colorMapUv) * _Color;
-                float opacity = result.a;
-                float3 color = result.rgb;
-
-#ifdef _ALPHATEST_ON
-                DoAlphaTest(opacity, _AlphaCutoff);
-#endif
+                float3 cameraRelativePos = GetCameraRelativePositionWS( GetObjectAbsolutePositionWS() );
+                
+                if( length(cameraRelativePos) > _MaxDistance ) discard;
 
                 // Write back the data to the output structures
                 ZERO_INITIALIZE(BuiltinData, builtinData); // No call to InitBuiltinData as we don't have any lighting
-                builtinData.opacity = opacity;
+                builtinData.opacity = 1;
                 builtinData.emissiveColor = float3(0, 0, 0);
-                surfaceData.color = color;
+                surfaceData.color = float3(1,1,1);
             }
 
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/ShaderPassForwardUnlit.hlsl"
