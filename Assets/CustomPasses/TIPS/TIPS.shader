@@ -35,38 +35,38 @@
     TEXTURE2D_X(_TIPSBuffer);
     float _EdgeDetectThreshold;
     float3 _GlowColor;
+    float _EdgeRadius;
 
     float SampleClampedDepth(float2 uv) { return SampleCameraDepth(clamp(uv, _ScreenSize.zw, 1 - _ScreenSize.zw)).r; }
-
-    static const float edgeRadius = 4;
 
     float EdgeDetect(float2 uv, float depthThreshold, float normalThreshold)
     {
         normalThreshold *= _EdgeDetectThreshold;
         depthThreshold *= _EdgeDetectThreshold;
-        float halfScaleFloor = floor(edgeRadius * 0.5);
-        float halfScaleCeil = ceil(edgeRadius * 0.5);
+        float halfScaleFloor = floor(_EdgeRadius * 0.5);
+        float halfScaleCeil = ceil(_EdgeRadius * 0.5);
     
+        // Compute uv position to fetch depth informations
         float2 bottomLeftUV = uv - float2(_ScreenSize.zw.x, _ScreenSize.zw.y) * halfScaleFloor;
         float2 topRightUV = uv + float2(_ScreenSize.zw.x, _ScreenSize.zw.y) * halfScaleCeil;
         float2 bottomRightUV = uv + float2(_ScreenSize.zw.x * halfScaleCeil, -_ScreenSize.zw.y * halfScaleFloor);
         float2 topLeftUV = uv + float2(-_ScreenSize.zw.x * halfScaleFloor, _ScreenSize.zw.y * halfScaleCeil);
     
-        // Depth from DepthTexture
+        // Depth from camera buffer
         float depth0 = SampleClampedDepth(bottomLeftUV);
         float depth1 = SampleClampedDepth(topRightUV);
         float depth2 = SampleClampedDepth(bottomRightUV);
         float depth3 = SampleClampedDepth(topLeftUV);
     
-        float depthFiniteDifference0 = depth1 - depth0;
-        float depthFiniteDifference1 = depth3 - depth2;
+        float depthDerivative0 = depth1 - depth0;
+        float depthDerivative1 = depth3 - depth2;
     
-        float edgeDepth = sqrt(pow(depthFiniteDifference0, 2) + pow(depthFiniteDifference1, 2)) * 100;
+        float edgeDepth = sqrt(pow(depthDerivative0, 2) + pow(depthDerivative1, 2)) * 100;
 
         float newDepthThreshold = depthThreshold * depth0;
         edgeDepth = edgeDepth > newDepthThreshold ? 1 : 0;
     
-        // Normals extracted from DepthNormalsTexture
+        // Normals extracted from the camera normal buffer
         NormalData normalData0, normalData1, normalData2, normalData3;
         DecodeFromNormalBuffer(_ScreenSize.xy * bottomLeftUV, normalData0);
         DecodeFromNormalBuffer(_ScreenSize.xy * topRightUV, normalData1);
@@ -79,26 +79,6 @@
         float edgeNormal = sqrt(dot(normalFiniteDifference0, normalFiniteDifference0) + dot(normalFiniteDifference1, normalFiniteDifference1));
         edgeNormal = edgeNormal > normalThreshold ? 1 : 0;
 
-        // Color:
-        float4 orValue = float4(CustomPassSampleCameraColor(uv, 0), 1);
-        float2 offsets[8] = {
-            float2(-1, -1),
-            float2(-1, 0),
-            float2(-1, 1),
-            float2(0, -1),
-            float2(0, 1),
-            float2(1, -1),
-            float2(1, 0),
-            float2(1, 1)
-        };
-        float3 sampledValue = float3(0,0,0);
-        for(int j = 0; j < 8; j++) {
-            sampledValue += CustomPassSampleCameraColor(uv + offsets[j] * _ScreenSize.zw, 0);
-        }
-        sampledValue /= 8;
-            
-        bool edgeColor = step(0.2, length(orValue.xyz - sampledValue));
-
         // Combined
         return max(edgeDepth, edgeNormal);
     }
@@ -107,36 +87,36 @@
     {
         float depth = LoadCameraDepth(varyings.positionCS.xy);
         PositionInputs posInput = GetPositionInput(varyings.positionCS.xy, _ScreenSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
-        float3 viewDirection = GetWorldSpaceNormalizeViewDir(posInput.positionWS);
         float4 color = float4(0.0, 0.0, 0.0, 0.0);
 
         // Load the camera color buffer at the mip 0 if we're not at the before rendering injection point
         if (_CustomPassInjectionPoint != CUSTOMPASSINJECTIONPOINT_BEFORE_RENDERING)
             color = float4(CustomPassSampleCameraColor(posInput.positionNDC.xy, 0), 1);
 
-        float3 edgeDetectColor = EdgeDetect(posInput.positionNDC.xy, 2, 1);
+        // Do some normal and depth based edge detection on the camera buffers.
+        float3 edgeDetectColor = EdgeDetect(posInput.positionNDC.xy, 2, 1) * _GlowColor;
+        // Remove the edge detect effect between the sky and objects when the object is inside the sphere
+        edgeDetectColor *= depth != UNITY_RAW_FAR_CLIP_VALUE;
 
-        edgeDetectColor *= _GlowColor;
-
+        // Load depth and color information from the custom buffer
         float meshDepthPos = LoadCustomDepth(posInput.positionSS.xy);
         float4 meshColor = LoadCustomColor(posInput.positionSS.xy);
 
+        // Change the color of the icosahedron mesh
         meshColor = saturate(float4(_GlowColor, 1)) * meshColor;
 
+        // Transform the raw depth into eye space depth
         float sceneDepth = LinearEyeDepth(depth, _ZBufferParams);
         float meshDepth = LinearEyeDepth(meshDepthPos, _ZBufferParams);
 
-        float3 compositedColor = lerp(color, meshColor, meshColor.a).xyz;
-        
-        float a = (sceneDepth < meshDepth) ? 1 - (abs(meshDepth - sceneDepth) / 2) : 0;
+        // Add the intersection with mesh and scene depth to the edge detect result
+        edgeDetectColor = lerp(edgeDetectColor, _GlowColor, saturate(2 - abs(meshDepth - sceneDepth) * 200 * rcp(_EdgeRadius)));
 
-        edgeDetectColor = lerp(edgeDetectColor, _GlowColor, saturate(2 - abs(meshDepth - sceneDepth) * 40));
-
-        a = (meshDepth - sceneDepth);
-
+        // Blend the mesh color and edge detect color using the mesh alpha transparency
         float3 edgeMeshColor = lerp(edgeDetectColor, meshColor.xyz, (meshDepth < sceneDepth) ? meshColor.a : 0);
 
-        float3 finalColor = lerp(edgeMeshColor, color.xyz, saturate(a));
+        // Avoid edge detection effect to leak inside the isocahedron mesh
+        float3 finalColor = saturate(meshDepth - sceneDepth) > 0 ? color.xyz : edgeMeshColor;
 
         return float4(finalColor, 1);
     }

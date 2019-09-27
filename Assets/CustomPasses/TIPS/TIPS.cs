@@ -19,6 +19,7 @@ class TIPSEditor : CustomPassDrawer
         public static GUIContent size = new GUIContent("Size", "Size of the effect.");
         public static GUIContent rotationSpeed = new GUIContent("Speed", "Speed of rotation.");
         public static GUIContent edgeThreshold = new GUIContent("Edge Threshold", "Edge detect effect threshold.");
+        public static GUIContent edgeRadius = new GUIContent("Edge Radius", "Radius of the edge detect effect.");
         public static GUIContent glowColor = new GUIContent("Color", "Color of the effect");
     }
 
@@ -26,6 +27,7 @@ class TIPSEditor : CustomPassDrawer
     SerializedProperty		size;
     SerializedProperty		rotationSpeed;
     SerializedProperty		edgeDetectThreshold;
+    SerializedProperty		edgeRadius;
     SerializedProperty		glowColor;
 
     protected override void Initialize(SerializedProperty customPass)
@@ -34,6 +36,7 @@ class TIPSEditor : CustomPassDrawer
         size = customPass.FindPropertyRelative("size");
         rotationSpeed = customPass.FindPropertyRelative("rotationSpeed");
         edgeDetectThreshold = customPass.FindPropertyRelative("edgeDetectThreshold");
+        edgeRadius = customPass.FindPropertyRelative("edgeRadius");
         glowColor = customPass.FindPropertyRelative("glowColor");
     }
 
@@ -48,10 +51,12 @@ class TIPSEditor : CustomPassDrawer
         rect.y += Styles.defaultLineSpace;
         edgeDetectThreshold.floatValue = EditorGUI.Slider(rect, Styles.edgeThreshold, edgeDetectThreshold.floatValue, 0.1f, 5f);
         rect.y += Styles.defaultLineSpace;
-        glowColor.colorValue = EditorGUI.ColorField(rect, Styles.edgeThreshold, glowColor.colorValue, true, false, true);
+        edgeRadius.intValue = EditorGUI.IntSlider(rect, Styles.edgeRadius, edgeRadius.intValue, 1, 6);
+        rect.y += Styles.defaultLineSpace;
+        glowColor.colorValue = EditorGUI.ColorField(rect, Styles.glowColor, glowColor.colorValue, true, false, true);
     }
 
-    protected override float GetPassHeight(SerializedProperty customPass) => Styles.defaultLineSpace * 5;
+    protected override float GetPassHeight(SerializedProperty customPass) => Styles.defaultLineSpace * 6;
 }
 
 #endif
@@ -62,6 +67,7 @@ class TIPS : CustomPass
     public float    size = 5;
     public float    rotationSpeed = 5;
     public float    edgeDetectThreshold = 1;
+    public int      edgeRadius = 2;
     public Color    glowColor;
 
     public const float  kMaxDistance = 1000;
@@ -101,6 +107,7 @@ class TIPS : CustomPass
         fullscreenMaterial.SetTexture("_TIPSBuffer", tipsBuffer);
         fullscreenMaterial.SetFloat("_EdgeDetectThreshold", edgeDetectThreshold);
         fullscreenMaterial.SetColor("_GlowColor", glowColor);
+        fullscreenMaterial.SetFloat("_EdgeRadius", (float)edgeRadius);
         CoreUtils.SetRenderTarget(cmd, tipsBuffer, ClearFlag.All);
         CoreUtils.DrawFullScreen(cmd, fullscreenMaterial, shaderPassId: compositingPass);
 
