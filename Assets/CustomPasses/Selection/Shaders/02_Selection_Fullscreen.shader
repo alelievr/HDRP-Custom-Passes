@@ -106,8 +106,6 @@
         for (uint i=0 ; i<sampleCount ; ++i )
         {
             outline =  max( SampleCustomColor( posInput.positionNDC + uvOffsetPerPixel * _OutlineWidth * offsets[i] ).r, outline );
-            
-            if (outline > 0 ) i = MAXSAMPLES;
         }
 
         float4 o = float4(0,0,0,0);
