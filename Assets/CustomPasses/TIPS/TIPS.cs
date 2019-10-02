@@ -40,6 +40,9 @@ class TIPSEditor : CustomPassDrawer
         glowColor = customPass.FindPropertyRelative("glowColor");
     }
 
+    // We only need the name to be displayed, the rest is controlled by the TIPS effect
+    protected override PassUIFlag commonPassUIFlags => PassUIFlag.Name;
+
     protected override void DoPassGUI(SerializedProperty customPass, Rect rect)
     {
         mesh.objectReferenceValue = EditorGUI.ObjectField(rect, Styles.mesh, mesh.objectReferenceValue, typeof(Mesh), false);
@@ -68,7 +71,7 @@ class TIPS : CustomPass
     public float    rotationSpeed = 5;
     public float    edgeDetectThreshold = 1;
     public int      edgeRadius = 2;
-    public Color    glowColor;
+    public Color    glowColor = Color.white;
 
     public const float  kMaxDistance = 1000;
 
@@ -92,22 +95,29 @@ class TIPS : CustomPass
 
         compositingPass = fullscreenMaterial.FindPass("Compositing");
         copyPass = fullscreenMaterial.FindPass("Copy");
+        targetColorBuffer = TargetBuffer.Custom;
+        targetDepthBuffer = TargetBuffer.Custom;
+        clearFlags = ClearFlag.All;
     }
 
     protected override void Execute(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult)
     {
-        if (mesh == null || tipsMeshMaterial == null || fullscreenMaterial == null)
+        if (fullscreenMaterial == null)
             return ;
 
-        Transform cameraTransform = camera.camera.transform;
-        Matrix4x4 trs = Matrix4x4.TRS(cameraTransform.position, Quaternion.Euler(0f, Time.realtimeSinceStartup * rotationSpeed, Time.realtimeSinceStartup * rotationSpeed * 0.5f), Vector3.one * size);
-        tipsMeshMaterial.SetFloat("_Intensity", (0.2f / size) * kMaxDistance);
-        cmd.DrawMesh(mesh, trs, tipsMeshMaterial, 0, tipsMeshMaterial.FindPass("ForwardOnly"));
+        if (mesh != null && tipsMeshMaterial != null)
+        {
+            Transform cameraTransform = camera.camera.transform;
+            Matrix4x4 trs = Matrix4x4.TRS(cameraTransform.position, Quaternion.Euler(0f, Time.realtimeSinceStartup * rotationSpeed, Time.realtimeSinceStartup * rotationSpeed * 0.5f), Vector3.one * size);
+            tipsMeshMaterial.SetFloat("_Intensity", (0.2f / size) * kMaxDistance);
+            cmd.DrawMesh(mesh, trs, tipsMeshMaterial, 0, tipsMeshMaterial.FindPass("ForwardOnly"));
+        }
 
         fullscreenMaterial.SetTexture("_TIPSBuffer", tipsBuffer);
         fullscreenMaterial.SetFloat("_EdgeDetectThreshold", edgeDetectThreshold);
         fullscreenMaterial.SetColor("_GlowColor", glowColor);
         fullscreenMaterial.SetFloat("_EdgeRadius", (float)edgeRadius);
+        fullscreenMaterial.SetFloat("_BypassMeshDepth", (mesh != null) ? 0 : size);
         CoreUtils.SetRenderTarget(cmd, tipsBuffer, ClearFlag.All);
         CoreUtils.DrawFullScreen(cmd, fullscreenMaterial, shaderPassId: compositingPass);
 

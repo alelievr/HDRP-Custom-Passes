@@ -13,7 +13,7 @@ public class LinkedScenes : MonoBehaviour
     [SerializeField]
 #endif
 
-    SceneAsset[] linkedScenes;
+    SceneAsset[] linkedScenes = null;
     
 #if UNITY_EDITOR
     void Start()
