@@ -36,6 +36,7 @@
     float _EdgeDetectThreshold;
     float3 _GlowColor;
     float _EdgeRadius;
+    float _BypassMeshDepth;
 
     float SampleClampedDepth(float2 uv) { return SampleCameraDepth(clamp(uv, _ScreenSize.zw, 1 - _ScreenSize.zw)).r; }
 
@@ -108,6 +109,9 @@
         // Transform the raw depth into eye space depth
         float sceneDepth = LinearEyeDepth(depth, _ZBufferParams);
         float meshDepth = LinearEyeDepth(meshDepthPos, _ZBufferParams);
+
+        if (_BypassMeshDepth != 0)
+            meshDepth = _BypassMeshDepth;
 
         // Add the intersection with mesh and scene depth to the edge detect result
         edgeDetectColor = lerp(edgeDetectColor, _GlowColor, saturate(2 - abs(meshDepth - sceneDepth) * 200 * rcp(_EdgeRadius)));
