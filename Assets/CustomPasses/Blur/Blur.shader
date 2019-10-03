@@ -103,7 +103,7 @@
         float maskDepth = SAMPLE_TEXTURE2D_X_LOD(_MaskDepth, s_linear_clamp_sampler, uv, 0).r;
         float maskValue = 0;
 
-        maskValue = any(mask.rgb > 0.1) || (maskDepth != 0);
+        maskValue = any(mask.rgb > 0.1) || (maskDepth > depth);
 
         if (_InvertMask > 0.5)
             maskValue = !maskValue;
