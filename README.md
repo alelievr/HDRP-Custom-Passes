@@ -22,3 +22,13 @@ Features:
 
 Source file link for this effect: [SlightBlur.cs](https://github.com/alelievr/HDRP-Custom-Passes/blob/master/Assets/CustomPasses/Blur/SlightBlur.cs) and [Blur.shader](https://github.com/alelievr/HDRP-Custom-Passes/blob/master/Assets/CustomPasses/Blur/Blur.shader)
 ![SlightBlur](https://user-images.githubusercontent.com/6877923/66118285-47179280-e5d6-11e9-9d92-1e7cc844bf03.gif)
+
+## Outline Effect:
+
+Source file link for this effect: [02_Selection_Objects.shader](https://github.com/alelievr/HDRP-Custom-Passes/blob/master/Assets/CustomPasses/Selection/Shaders/02_Selection_Objects.shader) and [02_Selection_Fullscreen.shader](https://github.com/alelievr/HDRP-Custom-Passes/blob/master/Assets/CustomPasses/Selection/Shaders/02_Selection_Fullscreen.shader)
+
+Effect made without custom C#, setup in the inspector: 
+![image](https://user-images.githubusercontent.com/6877923/66144393-0b49f080-e609-11e9-8251-368c8fabe548.png)
+
+![OutlineThickness](https://user-images.githubusercontent.com/6877923/66143724-f02ab100-e607-11e9-9fbf-af639112d17a.gif)
+![OutlineColor2](https://user-images.githubusercontent.com/6877923/66144282-d89ff800-e608-11e9-8f57-29604e404916.gif)
