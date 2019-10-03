@@ -32,3 +32,10 @@ Effect made without custom C#, setup in the inspector:
 
 ![OutlineThickness](https://user-images.githubusercontent.com/6877923/66143724-f02ab100-e607-11e9-9fbf-af639112d17a.gif)
 ![OutlineColor2](https://user-images.githubusercontent.com/6877923/66144282-d89ff800-e608-11e9-8f57-29604e404916.gif)
+
+## AR Effect:
+Features:
++ Early depth pass
++ Composite with video in background
+
+![AR](https://user-images.githubusercontent.com/32760367/66135092-ac30af80-e5f9-11e9-89bf-b534ac1443bc.png)
