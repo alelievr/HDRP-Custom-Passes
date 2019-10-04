@@ -2,6 +2,7 @@
 {
     Properties
     {
+		_SelectionColor("Selection Color", Color) = (1,1,1,1)
         _MaxDistance("Max Distance", float) = 15
 
         // Transparency
@@ -57,6 +58,7 @@
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/RenderPass/CustomPass/CustomPassRenderers.hlsl"
             
             float _MaxDistance;
+			float4 _SelectionColor;
 
             // If you need to modify the vertex datas, you can uncomment this code
             // Note: all the transformations here are done in object space
@@ -78,7 +80,7 @@
                 ZERO_INITIALIZE(BuiltinData, builtinData); // No call to InitBuiltinData as we don't have any lighting
                 builtinData.opacity = 1;
                 builtinData.emissiveColor = float3(0, 0, 0);
-                surfaceData.color = float3(1,1,1);
+                surfaceData.color = float3(1,1,1) * _SelectionColor.rgb;
             }
 
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/ShaderPassForwardUnlit.hlsl"
