@@ -93,19 +93,21 @@
         
         float alphaFactor = (db>d)?_BehindFactor:1;
 
-        float obj = LoadCustomColor(posInput.positionSS).r;
+		float4 c = LoadCustomColor(posInput.positionSS);
+
+        float obj = c.a;
         
         uint offset = 5;
         
         int sampleCount = min( 2 * pow(2, _SamplePrecision ), MAXSAMPLES ) ;
         
-        float outline = 0;
+        float4 outline = float4(0,0,0,0);
         
         float2 uvOffsetPerPixel = 1.0/_ScreenSize .xy;
         
         for (uint i=0 ; i<sampleCount ; ++i )
         {
-            outline =  max( SampleCustomColor( posInput.positionNDC + uvOffsetPerPixel * _OutlineWidth * offsets[i] ).r, outline );
+            outline =  max( SampleCustomColor( posInput.positionNDC + uvOffsetPerPixel * _OutlineWidth * offsets[i] ), outline );
         }
 
         float4 o = float4(0,0,0,0);
@@ -114,9 +116,9 @@
         
         innerColor.a *= alphaFactor;
         
-        o = lerp(o, _OuterColor, outline);
+        o = lerp(o, _OuterColor * float4(outline.rgb, 1), outline.a);
         
-        o = lerp( o, innerColor, obj);
+        o = lerp( o, innerColor * float4(c.rgb, 1), obj);
         
         return o;
     }
