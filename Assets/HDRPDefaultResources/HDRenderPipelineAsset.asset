@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cf1dab834d4ec34195b920ea7bbf9ec, type: 3}
   m_Name: HDRenderPipelineAsset
   m_EditorClassIdentifier: 
-  m_Version: 9
+  m_Version: 10
   m_ObsoleteFrameSettings:
     overrides: 0
     enableShadow: 0
@@ -148,14 +148,12 @@ MonoBehaviour:
       enableFptlForForwardOpaque: 0
       enableBigTilePrepass: 0
       isFptlEnabled: 0
-  m_RenderPipelineResources: {fileID: 11400000, guid: 3ce144cff5783da45aa5d4fdc2da14b7,
-    type: 2}
-  m_RenderPipelineRayTracingResources: {fileID: 11400000, guid: ba6e7f30e5cffc249a8bf7ee5756c196,
-    type: 2}
+  m_RenderPipelineResources: {fileID: 0}
+  m_RenderPipelineRayTracingResources: {fileID: 0}
   m_DefaultVolumeProfile: {fileID: 0}
   m_RenderingPathDefaultCameraFrameSettings:
     bitDatas:
-      data1: 69730941533981
+      data1: 70280697347933
       data2: 4539628424926265344
     lodBias: 1
     lodBiasMode: 0
@@ -166,7 +164,7 @@ MonoBehaviour:
     materialQuality: 0
   m_RenderingPathDefaultBakedOrCustomReflectionFrameSettings:
     bitDatas:
-      data1: 64942043591453
+      data1: 64942043591517
       data2: 4539628424389459968
     lodBias: 1
     lodBiasMode: 0
@@ -177,7 +175,7 @@ MonoBehaviour:
     materialQuality: 0
   m_RenderingPathDefaultRealtimeReflectionFrameSettings:
     bitDatas:
-      data1: 69692120112925
+      data1: 69692120112989
       data2: 4539628424657895424
     lodBias: 1
     lodBiasMode: 0
@@ -200,6 +198,8 @@ MonoBehaviour:
     supportTransparentDepthPrepass: 1
     supportTransparentDepthPostpass: 1
     colorBufferFormat: 74
+    supportCustomPass: 1
+    customBufferFormat: 12
     supportedLitShaderMode: 2
     supportDecals: 1
     msaaSampleCount: 1
@@ -311,7 +311,9 @@ MonoBehaviour:
   materialQualityLevels: -1
   m_CurrentMaterialQualityLevel: 4
   diffusionProfileSettings: {fileID: 0}
-  diffusionProfileSettingsList: []
+  diffusionProfileSettingsList:
+  - {fileID: 11400000, guid: 67a6fcbfb6f51ee4087f92208bb70924, type: 2}
+  - {fileID: 11400000, guid: 68b14a52ba5436d4185e1e8bd55e22e8, type: 2}
   beforeTransparentCustomPostProcesses: []
   beforePostProcessCustomPostProcesses: []
   afterPostProcessCustomPostProcesses: []

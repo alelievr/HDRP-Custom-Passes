@@ -124,10 +124,6 @@ class SlightBlur : CustomPass
             sortingCriteria = SortingCriteria.BackToFront,
             excludeObjectMotionVectors = false,
             layerMask = maskLayer,
-            stateBlock = new RenderStateBlock
-            {
-                depthState = new DepthState(true, CompareFunction.LessEqual),
-            }
         };
 
         CoreUtils.SetRenderTarget(cmd, maskBuffer, maskDepthBuffer, ClearFlag.All);

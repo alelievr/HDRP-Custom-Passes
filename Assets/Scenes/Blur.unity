@@ -442,7 +442,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: ade34ccebfab34a499d54693ee670a59, type: 2}
+  sharedProfile: {fileID: 0}
 --- !u!4 &1465166021
 Transform:
   m_ObjectHideFlags: 0
@@ -544,7 +544,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1592529269}
   - component: {fileID: 1592529268}
-  - component: {fileID: 1592529270}
   m_Layer: 0
   m_Name: CustomPass
   m_TagString: Untagged
@@ -564,7 +563,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26d6499a6bd256e47b859377446493a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGlobal: 0
+  isGlobal: 1
   customPasses:
   - id: 0
   injectionPoint: 2
@@ -599,19 +598,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1592529270
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1592529267}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1677975180
 GameObject:
   m_ObjectHideFlags: 0

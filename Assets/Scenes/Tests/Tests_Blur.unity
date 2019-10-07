@@ -247,7 +247,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: 87d9debcfd66eed448378895579e587d, type: 2}
+  sharedProfile: {fileID: 0}
 --- !u!4 &869835808
 Transform:
   m_ObjectHideFlags: 0
@@ -576,7 +576,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: ade34ccebfab34a499d54693ee670a59, type: 2}
+  sharedProfile: {fileID: 11400000, guid: ab4cd761e6c326b4fa332f07bec47b03, type: 2}
 --- !u!4 &1114728283
 Transform:
   m_ObjectHideFlags: 0
@@ -630,16 +630,17 @@ MonoBehaviour:
       type: {class: SlightBlur, ns: , asm: NewAssembly}
       data:
         name: UI Blur
-        enabled: 1
+        enabled: 0
         targetColorBuffer: 0
         targetDepthBuffer: 0
         clearFlags: 0
         passFoldout: 0
-        radius: 7.92
+        radius: 0.94
         useMask: 1
         maskLayer:
           serializedVersion: 2
-          m_Bits: 2048
+          m_Bits: 0
+        invertMask: 0
 --- !u!4 &1337685672
 Transform:
   m_ObjectHideFlags: 0
