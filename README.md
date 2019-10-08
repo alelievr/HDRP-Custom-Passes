@@ -34,8 +34,17 @@ Effect made without custom C#, setup in the inspector:
 ![OutlineColor2](https://user-images.githubusercontent.com/6877923/66144282-d89ff800-e608-11e9-8f57-29604e404916.gif)
 
 ## AR Effect:
+
 Features:
 + Early depth pass
 + Composite with video in background
 
 ![AR](https://user-images.githubusercontent.com/32760367/66135092-ac30af80-e5f9-11e9-89bf-b534ac1443bc.png)
+
+## Glitch Effect:
+
+Features:
++ Display a "bad reception" effect over objects of specified layer, using the following shader:
+![SS_Glitch](https://user-images.githubusercontent.com/32760367/66395699-63ea0680-e9d8-11e9-88d3-d9b2e6f71837.png)
+
+![Glitch](https://user-images.githubusercontent.com/32760367/66395665-4f0d7300-e9d8-11e9-812e-4f913405addc.gif)
