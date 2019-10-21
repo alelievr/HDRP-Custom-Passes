@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cf1dab834d4ec34195b920ea7bbf9ec, type: 3}
   m_Name: HDRenderPipelineAsset
   m_EditorClassIdentifier: 
-  m_Version: 10
+  m_Version: 11
   m_ObsoleteFrameSettings:
     overrides: 0
     enableShadow: 0
@@ -148,9 +148,11 @@ MonoBehaviour:
       enableFptlForForwardOpaque: 0
       enableBigTilePrepass: 0
       isFptlEnabled: 0
-  m_RenderPipelineResources: {fileID: 0}
+  m_RenderPipelineResources: {fileID: 11400000, guid: 3ce144cff5783da45aa5d4fdc2da14b7,
+    type: 2}
   m_RenderPipelineRayTracingResources: {fileID: 0}
-  m_DefaultVolumeProfile: {fileID: 0}
+  m_DefaultVolumeProfile: {fileID: 11400000, guid: 3043edc9d9a47704fad99f10fea80a08,
+    type: 2}
   m_RenderingPathDefaultCameraFrameSettings:
     bitDatas:
       data1: 70280697347933
@@ -243,11 +245,17 @@ MonoBehaviour:
         shadowAtlasDepthBits: 32
         useDynamicViewportRescale: 1
       shadowResolutionDirectional:
-        m_Values: 00010000000200000004000000080000
+        m_Values: 00010000000200000004000000000000
+        m_SchemaId:
+          m_Id: With4Levels
       shadowResolutionPunctual:
-        m_Values: 00010000000200000004000000080000
+        m_Values: 00010000000200000004000000000000
+        m_SchemaId:
+          m_Id: With4Levels
       shadowResolutionArea:
-        m_Values: 00010000000200000004000000080000
+        m_Values: 00010000000200000004000000000000
+        m_SchemaId:
+          m_Id: With4Levels
       maxDirectionalShadowMapResolution: 2048
       maxPunctualShadowMapResolution: 2048
       maxAreaShadowMapResolution: 2048
@@ -294,17 +302,20 @@ MonoBehaviour:
       ChromaticAberrationMaxSamples: 03000000060000000c000000
     lightSettings:
       useContactShadow:
-        m_Low: 0
-        m_Medium: 0
-        m_High: 0
+        m_Values: 000000
+        m_SchemaId:
+          m_Id: 
     maximumLODLevel:
-      m_Low: 0
-      m_Medium: 0
-      m_High: 0
+      m_Values: 000000000000000000000000
+      m_SchemaId:
+        m_Id: With3Levels
     lodBias:
-      m_Low: 1
-      m_Medium: 1
-      m_High: 1
+      m_Values:
+      - 1
+      - 1
+      - 1
+      m_SchemaId:
+        m_Id: With3Levels
   allowShaderVariantStripping: 1
   enableSRPBatcher: 1
   shaderVariantLogLevel: 0

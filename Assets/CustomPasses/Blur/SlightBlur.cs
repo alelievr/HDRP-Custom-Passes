@@ -31,7 +31,6 @@ class SlightBlur : CustomPass
         public static readonly int _ColorBufferCopy = Shader.PropertyToID("_ColorBufferCopy");
         public static readonly int _Mask = Shader.PropertyToID("_Mask");
         public static readonly int _MaskDepth = Shader.PropertyToID("_MaskDepth");
-        public static readonly int _UVScale = Shader.PropertyToID("_UVScale");
         public static readonly int _InvertMask = Shader.PropertyToID("_InvertMask");
     }
 
@@ -172,7 +171,6 @@ class SlightBlur : CustomPass
             CoreUtils.SetRenderTarget(cmd, blurBuffer, ClearFlag.None);
             hBlurProperties.SetFloat(ShaderID._Radius, radius / 4.0f); // The blur is 4 pixel wide in the shader
             hBlurProperties.SetTexture(ShaderID._Source, downSampleBuffer); // The blur is 4 pixel wide in the shader
-            hBlurProperties.SetFloat(ShaderID._UVScale, 2);
             cmd.SetViewport(new Rect(0, 0, dstMipWidth, dstMipHeight));
             CoreUtils.DrawFullScreen(cmd, blurMaterial, shaderPassId: 0, properties: hBlurProperties); // Do not forget the shaderPassId: ! or it won't work
         }
@@ -187,7 +185,6 @@ class SlightBlur : CustomPass
             CoreUtils.SetRenderTarget(cmd, (useMask) ? downSampleBuffer : source, ClearFlag.None);
             vBlurProperties.SetFloat(ShaderID._Radius, radius / 4.0f); // The blur is 4 pixel wide in the shader
             vBlurProperties.SetTexture(ShaderID._Source, blurBuffer);
-            vBlurProperties.SetFloat(ShaderID._UVScale, (useMask) ? 2 : 1);
             CoreUtils.DrawFullScreen(cmd, blurMaterial, shaderPassId: 1, properties: vBlurProperties);
         }
 

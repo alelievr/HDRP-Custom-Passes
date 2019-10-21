@@ -154,7 +154,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: 87d9debcfd66eed448378895579e587d, type: 2}
+  sharedProfile: {fileID: 0}
 --- !u!4 &869835808
 Transform:
   m_ObjectHideFlags: 0
@@ -483,7 +483,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: ade34ccebfab34a499d54693ee670a59, type: 2}
+  sharedProfile: {fileID: 0}
 --- !u!4 &1114728283
 Transform:
   m_ObjectHideFlags: 0
@@ -528,6 +528,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGlobal: 1
+  fadeRadius: 0
   customPasses:
   - id: 0
   injectionPoint: 2
@@ -541,14 +542,14 @@ MonoBehaviour:
         targetColorBuffer: 1
         targetDepthBuffer: 1
         clearFlags: 3
-        passFoldout: 0
+        passFoldout: 1
         mesh: {fileID: 289301614986012343, guid: 273f38931f597274b8b2f03f57919645,
           type: 3}
-        size: 96
+        size: 31
         rotationSpeed: 6.23
         edgeDetectThreshold: 1.91
         edgeRadius: 2
-        glowColor: {r: 1, g: 0, b: 0, a: 1}
+        glowColor: {r: 59.017693, g: 0, b: 0, a: 1}
         tipsMeshMaterial: {fileID: 2100000, guid: c8bb373c96cc6d14eb7eea71f197c3ea,
           type: 2}
 --- !u!4 &1337685672
@@ -929,9 +930,9 @@ MonoBehaviour:
   m_VolumetricShadowDimmer: 1
   m_ShadowFadeDistance: 10000
   m_UseContactShadow:
-    m_Level: 0
-    m_UseOverride: 1
     m_Override: 0
+    m_UseOverride: 1
+    m_Level: 0
   m_ShadowTint: {r: 0, g: 0, b: 0, a: 1}
   m_NormalBias: 0.75
   m_ConstantBias: 0.15

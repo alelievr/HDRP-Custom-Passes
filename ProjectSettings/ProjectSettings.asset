@@ -335,6 +335,9 @@ PlayerSettings:
   - m_BuildTarget: WebGLSupport
     m_APIs: 0b000000
     m_Automatic: 1
+  - m_BuildTarget: WindowsStandaloneSupport
+    m_APIs: 1200000002000000
+    m_Automatic: 0
   m_BuildTargetVRSettings:
   - m_BuildTarget: Standalone
     m_Enabled: 0
@@ -592,7 +595,7 @@ PlayerSettings:
   il2cppCompilerConfiguration: {}
   managedStrippingLevel: {}
   incrementalIl2cppBuild: {}
-  allowUnsafeCode: 0
+  allowUnsafeCode: 1
   additionalIl2CppArgs: 
   scriptingRuntimeVersion: 1
   gcIncremental: 0
@@ -675,6 +678,6 @@ PlayerSettings:
   projectName: 
   organizationId: 
   cloudEnabled: 0
-  enableNativePlatformBackendsForNewInputSystem: 0
-  disableOldInputManagerSupport: 0
+  enableNativePlatformBackendsForNewInputSystem: 1
+  disableOldInputManagerSupport: 1
   legacyClampBlendShapeWeights: 0
