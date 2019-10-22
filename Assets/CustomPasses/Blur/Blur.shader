@@ -38,6 +38,9 @@
     TEXTURE2D_X_HALF(_MaskDepth);
     float _Radius;
     float _InvertMask;
+    float4 _ViewPortSize; // We need the viewport size because we have a non fullscreen render target (blur buffers are downsampled in half res)
+
+    #pragma enable_d3d11_debug_symbols
 
     float3 BlurPixels(float3 taps[9])
     {
@@ -48,23 +51,31 @@
              + 0.00390625 * (taps[0] + taps[8]);
     }
 
+    // We need to clamp the UVs to avoid bleeding from bigger render tragets (when we have multiple cameras)
     float2 ClampUVs(float2 uv)
     {
-        uv = clamp(uv, 0, _RTHandleScale.xy - _ScreenSize.zw); // clamp UV to 1 pixel to avoid bleeding
+        uv = clamp(uv, 0, _RTHandleScale.xy - _ViewPortSize.zw); // clamp UV to 1 pixel to avoid bleeding
         return uv;
     }
 
+    float2 GetSampleUVs(Varyings varyings)
+    {
+        float depth = LoadCameraDepth(varyings.positionCS.xy);
+        PositionInputs posInput = GetPositionInput(varyings.positionCS.xy, _ViewPortSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
+        return posInput.positionNDC.xy * _RTHandleScale;
+    }
+
+
     float4 HorizontalBlur(Varyings varyings) : SV_Target
     {
-        float depth = SampleCameraDepth(varyings.texcoord);
-        PositionInputs posInput = GetPositionInput(varyings.texcoord, _ScreenSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
+        float2 texcoord = GetSampleUVs(varyings);
 
         // Horizontal blur from the camera color buffer
-        float2 offset = _ScreenSize.zw * _Radius;
+        float2 offset = _ScreenSize.zw * _Radius; // We don't use _ViewPortSize here because we want the offset to be the same between all the blur passes.
         float3 taps[9];
         for (int i = -4; i <= 4; i++)
         {
-            float2 uv = ClampUVs(varyings.texcoord + float2(i, 0) * offset);
+            float2 uv = ClampUVs(texcoord + float2(i, 0) * offset);
             taps[i + 4] = SAMPLE_TEXTURE2D_X_LOD(_Source, s_linear_clamp_sampler, uv, 0).rgb;
         }
 
@@ -73,15 +84,14 @@
 
     float4 VerticalBlur(Varyings varyings) : SV_Target
     {
-        float depth = SampleCameraDepth(varyings.texcoord);
-        PositionInputs posInput = GetPositionInput(varyings.texcoord, _ScreenSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
+        float2 texcoord = GetSampleUVs(varyings);
 
         // Vertical blur from the blur color buffer
         float2 offset = _ScreenSize.zw * _Radius;
         float3 taps[9];
         for (int i = -4; i <= 4; i++)
         {
-            float2 uv = ClampUVs(varyings.texcoord + float2(0, i) * offset);
+            float2 uv = ClampUVs(texcoord + float2(0, i) * offset);
             taps[i + 4] = SAMPLE_TEXTURE2D_X_LOD(_Source, s_linear_clamp_sampler, uv, 0).rgb;
         }
 
@@ -90,9 +100,8 @@
 
     float4 CompositeMaskedBlur(Varyings varyings) : SV_Target
     {
-        float depth = SampleCameraDepth(varyings.texcoord);
-        PositionInputs posInput = GetPositionInput(varyings.texcoord, _ScreenSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
-        float2 uv = ClampUVs(varyings.texcoord);
+        float depth = LoadCameraDepth(varyings.positionCS.xy);
+        float2 uv = ClampUVs(GetSampleUVs(varyings));
 
         float4 colorBuffer = SAMPLE_TEXTURE2D_X_LOD(_ColorBufferCopy, s_linear_clamp_sampler, uv, 0).rgba;
         float4 blurredBuffer = SAMPLE_TEXTURE2D_X_LOD(_Source, s_linear_clamp_sampler, uv, 0).rgba;
@@ -100,7 +109,7 @@
         float maskDepth = SAMPLE_TEXTURE2D_X_LOD(_MaskDepth, s_linear_clamp_sampler, uv, 0).r;
         float maskValue = 0;
 
-        maskValue = any(mask.rgb > 0.1) || (maskDepth > depth);
+        maskValue = any(mask.rgb > 0.1) || (maskDepth > depth - 0.0001);
 
         if (_InvertMask > 0.5)
             maskValue = !maskValue;

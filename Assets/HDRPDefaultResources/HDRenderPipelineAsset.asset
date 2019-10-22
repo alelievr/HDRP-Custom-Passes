@@ -195,6 +195,14 @@ MonoBehaviour:
     supportVolumetrics: 1
     increaseResolutionOfVolumetrics: 0
     supportLightLayers: 0
+    lightLayerName0: Light Layer default
+    lightLayerName1: Light Layer 1
+    lightLayerName2: Light Layer 2
+    lightLayerName3: Light Layer 3
+    lightLayerName4: Light Layer 4
+    lightLayerName5: Light Layer 5
+    lightLayerName6: Light Layer 6
+    lightLayerName7: Light Layer 7
     supportDistortion: 1
     supportTransparentBackface: 1
     supportTransparentDepthPrepass: 1
@@ -326,5 +334,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 67a6fcbfb6f51ee4087f92208bb70924, type: 2}
   - {fileID: 11400000, guid: 68b14a52ba5436d4185e1e8bd55e22e8, type: 2}
   beforeTransparentCustomPostProcesses: []
-  beforePostProcessCustomPostProcesses: []
+  beforePostProcessCustomPostProcesses:
+  - GrayScale, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   afterPostProcessCustomPostProcesses: []
