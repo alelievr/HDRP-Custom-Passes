@@ -1476,7 +1476,7 @@ MonoBehaviour:
       enableBigTilePrepass: 0
       isFptlEnabled: 0
   clearColorMode: 1
-  backgroundColorHDR: {r: 0.025, g: 0.07, b: 0.19, a: 0}
+  backgroundColorHDR: {r: 0.45641106, g: 0.45641106, b: 0.45641106, a: 1}
   clearDepth: 1
   volumeLayerMask:
     serializedVersion: 2
@@ -1587,9 +1587,9 @@ MonoBehaviour:
   m_VolumetricShadowDimmer: 1
   m_ShadowFadeDistance: 10000
   m_UseContactShadow:
-    m_Level: 0
-    m_UseOverride: 1
     m_Override: 0
+    m_UseOverride: 1
+    m_Level: 0
   m_ShadowTint: {r: 0, g: 0, b: 0, a: 1}
   m_NormalBias: 0.75
   m_ConstantBias: 0.15
@@ -3022,6 +3022,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGlobal: 1
+  fadeRadius: 0
   customPasses:
   - id: 0
   - id: 1
@@ -3041,6 +3042,7 @@ MonoBehaviour:
         fullscreenPassMaterial: {fileID: 2100000, guid: aa82865716960a940906228b37141f6b,
           type: 2}
         materialPassIndex: 0
+        fetchColorBuffer: 0
     00000001:
       type: {class: DrawRenderersCustomPass, ns: UnityEngine.Rendering.HighDefinition,
         asm: Unity.RenderPipelines.HighDefinition.Runtime}
@@ -3063,6 +3065,9 @@ MonoBehaviour:
         overrideMaterial: {fileID: 2100000, guid: 9e9e3b78e64fd004593cbb5ac8efc03b,
           type: 2}
         overrideMaterialPassIndex: 1
+        overrideDepthState: 0
+        depthCompareFunction: 0
+        depthWrite: 0
 --- !u!4 &1942565092
 Transform:
   m_ObjectHideFlags: 0

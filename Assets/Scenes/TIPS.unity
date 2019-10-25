@@ -265,7 +265,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: ade34ccebfab34a499d54693ee670a59, type: 2}
+  sharedProfile: {fileID: 0}
 --- !u!4 &1465166021
 Transform:
   m_ObjectHideFlags: 0
@@ -311,6 +311,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGlobal: 1
+  fadeRadius: 0
   customPasses:
   - id: 0
   injectionPoint: 2
@@ -327,7 +328,7 @@ MonoBehaviour:
         passFoldout: 0
         mesh: {fileID: 289301614986012343, guid: 273f38931f597274b8b2f03f57919645,
           type: 3}
-        size: 36
+        size: 24
         rotationSpeed: 9.79
         edgeDetectThreshold: 0.63
         edgeRadius: 1
