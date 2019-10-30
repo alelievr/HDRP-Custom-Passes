@@ -48,3 +48,9 @@ Features:
 ![SS_Glitch](https://user-images.githubusercontent.com/32760367/66395699-63ea0680-e9d8-11e9-88d3-d9b2e6f71837.png)
 
 ![Glitch](https://user-images.githubusercontent.com/32760367/66395665-4f0d7300-e9d8-11e9-812e-4f913405addc.gif)
+
+
+## Scrolling Formulas Effect:
++ Uses a builtin fullscreen custom pass and a custom pass fullscreen shader
++ Triplanar mapping
+![ScrollingFormulas](https://user-images.githubusercontent.com/6877923/67881514-eb8ee500-fb40-11e9-9545-b2b71bd44e6e.gif)
