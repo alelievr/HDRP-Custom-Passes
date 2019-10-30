@@ -61,9 +61,10 @@
         DecodeFromNormalBuffer(varyings.positionCS.xy, normalData);
         float3 normal = normalData.normalWS;
 
-        float2 uvX = worldPos.zy * _Scale;
-        float2 uvY = worldPos.xz * _Scale;
-        float2 uvZ = worldPos.xy * _Scale;
+        float3 offsetedPosition = worldPos.xyz - float3(0, 0, _SphereSize);
+        float2 uvX = offsetedPosition.zy * _Scale;
+        float2 uvY = offsetedPosition.xz * _Scale;
+        float2 uvZ = offsetedPosition.xy * _Scale;
 
         float4 colorX = SAMPLE_TEXTURE2D(_TriplanarTexture, s_trilinear_repeat_sampler, uvX).rgba;
         float4 colorY = SAMPLE_TEXTURE2D(_TriplanarTexture, s_trilinear_repeat_sampler, uvY).rgba;
@@ -73,8 +74,8 @@
         normal = normalize(pow(abs(normal), _Power)) * s;
         color = colorX * abs(normal.x) + colorY * abs(normal.y) + colorZ * abs(normal.z);
 
-        float d = 1 - saturate( length( worldPos ) - _SphereSize );
-        // color.a *= d;
+        float d = saturate((worldPos.z - _SphereSize) / 5.0);
+        color.a *= d;
 
         // Fade value allow you to increase the strength of the effect while the camera gets closer to the custom pass volume
         float f = 1 - abs(_FadeValue * 2 - 1);
