@@ -18,6 +18,7 @@
 
     //enable GPU instancing support
     #pragma multi_compile_instancing
+    #pragma instancing_options renderinglayer
 
     ENDHLSL
 
@@ -54,6 +55,7 @@
             // List all the varyings needed in your fragment shader
             #define VARYINGS_NEED_TEXCOORD0
             #define VARYINGS_NEED_TANGENT_TO_WORLD
+            #define VARYINGS_NEED_POSITION_WS
             
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/RenderPass/CustomPass/CustomPassRenderers.hlsl"
             
@@ -72,9 +74,7 @@
             // Put the code to render the objects in your custom pass in this function
             void GetSurfaceAndBuiltinData(FragInputs fragInputs, float3 viewDirection, inout PositionInputs posInput, out SurfaceData surfaceData, out BuiltinData builtinData)
             {
-                float3 cameraRelativePos = GetCameraRelativePositionWS( GetObjectAbsolutePositionWS() );
-                
-                if( length(cameraRelativePos) > _MaxDistance ) discard;
+                if( length(fragInputs.positionRWS) > _MaxDistance ) discard;
 
                 // Write back the data to the output structures
                 ZERO_INITIALIZE(BuiltinData, builtinData); // No call to InitBuiltinData as we don't have any lighting

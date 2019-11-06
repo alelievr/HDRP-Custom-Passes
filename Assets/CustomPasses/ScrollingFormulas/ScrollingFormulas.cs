@@ -5,7 +5,7 @@ using UnityEngine.Experimental.Rendering;
 
 class ScrollingFormulas : CustomPass
 {
-    public Texture2D    scrollingFormula;
+    public Texture2D    scrollingFormula = null;
 
     Material            scrollingFullscreen;
 
