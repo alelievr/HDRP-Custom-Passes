@@ -49,8 +49,18 @@ Features:
 
 ![Glitch](https://user-images.githubusercontent.com/32760367/66395665-4f0d7300-e9d8-11e9-812e-4f913405addc.gif)
 
-
 ## Scrolling Formulas Effect:
+
+Features:
 + Uses a builtin fullscreen custom pass and a custom pass fullscreen shader
 + Triplanar mapping
 ![ScrollingFormulas](https://user-images.githubusercontent.com/6877923/67881514-eb8ee500-fb40-11e9-9545-b2b71bd44e6e.gif)
+
+## Liquid
+
+Features:
++ Meta balls made by bluring normals
++ Visual Effect Graph inside a custom pass
++ Overriding depth and normals of a fullscreen transparent to emulate a surface
+![Liquid](https://user-images.githubusercontent.com/6877923/68505769-57233180-0268-11ea-9137-6983e859d214.gif)
+)
