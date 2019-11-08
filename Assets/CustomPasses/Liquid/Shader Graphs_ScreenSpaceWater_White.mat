@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_ScreenSpaceWater
+  m_Name: Shader Graphs_ScreenSpaceWater_White
   m_Shader: {fileID: -6465566751694194690, guid: da49df4a65fd96948828189c575116f5,
     type: 3}
   m_ShaderKeywords: _ALPHATEST_ON _BLENDMODE_ALPHA _SURFACE_TYPE_TRANSPARENT
@@ -25,13 +25,13 @@ Material:
     serializedVersion: 3
     m_TexEnvs: []
     m_Floats:
-    - Vector1_138FBD95: 0.01
-    - Vector1_76EECF9C: -0.3
-    - Vector1_7E619FA4: 0
-    - Vector1_AF92C8B3: 1.07
+    - Vector1_138FBD95: 0.361
+    - Vector1_76EECF9C: 0.96
+    - Vector1_7E619FA4: -0.05
+    - Vector1_AF92C8B3: 1
     - Vector1_B69C8A1E: 0
-    - Vector1_EE69F246: 0
-    - Vector1_F093E635: 0.916
+    - Vector1_EE69F246: -2.54
+    - Vector1_F093E635: 1
     - _AlphaCutoffEnable: 1
     - _AlphaDstBlend: 10
     - _AlphaSrcBlend: 1
@@ -39,7 +39,7 @@ Material:
     - _CullMode: 2
     - _CullModeForward: 2
     - _DoubleSidedEnable: 0
-    - _DoubleSidedNormalMode: 2
+    - _DoubleSidedNormalMode: 1
     - _DstBlend: 10
     - _ReceivesSSR: 1
     - _RenderQueueType: 5
@@ -65,7 +65,7 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 1
     m_Colors:
-    - Color_49C072C3: {r: 0.7253471, g: 0.8187967, b: 0.9433962, a: 0}
+    - Color_49C072C3: {r: 0, g: 0.24035478, b: 1, a: 0}
     - Color_E81266BD: {r: 1, g: 1, b: 1, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}

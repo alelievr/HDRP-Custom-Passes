@@ -3,6 +3,8 @@ using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.Rendering;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
+using System.Collections.Generic;
+using System.Collections;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -52,7 +54,6 @@ class Liquid : CustomPass
     {
         blurMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/FullScreen/BlurPasses"));
         compositingMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/FullScreen/LiquidCompositing"));
-        quad = Resources.Load<Mesh>("Quad");
 
         shaderTags = new ShaderTagId[4]
         {
@@ -78,6 +79,20 @@ class Liquid : CustomPass
         targetColorBuffer = TargetBuffer.Custom;
         targetDepthBuffer = TargetBuffer.Custom;
         clearFlags = ClearFlag.All;
+
+        quad = new Mesh();
+        quad.SetVertices(new List< Vector3 >{
+            new Vector3(-1, -1, 0),
+            new Vector3( 1, -1, 0),
+            new Vector3(-1,  1, 0),
+            new Vector3( 1,  1, 0),
+        });
+        quad.SetTriangles(new List<int>{
+            0, 3, 1, 0, 2, 3
+        }, 0);
+        quad.RecalculateBounds();
+
+        quad.UploadMeshData(false);
     }
 
     protected override void Execute(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResult)
@@ -105,8 +120,13 @@ class Liquid : CustomPass
 
         // Composite the result into the camera color buffer
         SetCameraRenderTarget(cmd);
-        cmd.DrawMesh(quad, Matrix4x4.identity, transparentFullscreenShader, 0, transparentFullscreenShader.FindPass("Forward"));
-        // CoreUtils.DrawFullScreen(cmd, compositingMaterial, shaderPassId: 0);
+        int pass = transparentFullscreenShader.FindPass("Forward");
+        if (pass == -1)
+            pass = transparentFullscreenShader.FindPass("ForwardOnly");
+        
+        // Move the mesh to the far plane of the camera
+        float ForwardDistance = hdCamera.camera.nearClipPlane + 0.000001f;
+        cmd.DrawMesh(quad, Matrix4x4.TRS(hdCamera.camera.transform.position + hdCamera.camera.transform.forward * ForwardDistance, hdCamera.camera.transform.rotation, Vector3.one), transparentFullscreenShader, 0, pass);
     }
 
     // We need the viewport size in our shader because we're using half resolution render targets (and so the _ScreenSize
@@ -156,6 +176,7 @@ class Liquid : CustomPass
     {
         CoreUtils.Destroy(blurMaterial);
         CoreUtils.Destroy(compositingMaterial);
+        CoreUtils.Destroy(quad);
         downSampleBuffer.Release();
         blurBuffer.Release();
     }
