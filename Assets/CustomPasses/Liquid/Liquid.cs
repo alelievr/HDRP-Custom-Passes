@@ -52,6 +52,7 @@ class Liquid : CustomPass
     // The render pipeline will ensure target setup and clearing happens in an performance manner.
     protected override void Setup(ScriptableRenderContext renderContext, CommandBuffer cmd)
     {
+        Debug.Log("Alloc !");
         blurMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/FullScreen/BlurPasses"));
         compositingMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/FullScreen/LiquidCompositing"));
 
@@ -179,5 +180,6 @@ class Liquid : CustomPass
         CoreUtils.Destroy(quad);
         downSampleBuffer.Release();
         blurBuffer.Release();
+        Debug.Log("Cleanup !");
     }
 }
