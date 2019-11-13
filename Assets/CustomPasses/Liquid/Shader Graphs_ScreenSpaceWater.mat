@@ -11,7 +11,7 @@ Material:
   m_Shader: {fileID: -6465566751694194690, guid: da49df4a65fd96948828189c575116f5,
     type: 3}
   m_ShaderKeywords: _ALPHATEST_ON _BLENDMODE_ALPHA _SURFACE_TYPE_TRANSPARENT
-  m_LightmapFlags: 4
+  m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: 3000
@@ -25,13 +25,15 @@ Material:
     serializedVersion: 3
     m_TexEnvs: []
     m_Floats:
-    - Vector1_138FBD95: 0.01
-    - Vector1_76EECF9C: -0.3
+    - Vector1_138FBD95: 0.999
+    - Vector1_58748EA: 0
+    - Vector1_76EECF9C: 0.31
     - Vector1_7E619FA4: 0
-    - Vector1_AF92C8B3: 1.07
+    - Vector1_881E2AB0: 0.000756
+    - Vector1_AF92C8B3: 1.04
     - Vector1_B69C8A1E: 0
     - Vector1_EE69F246: 0
-    - Vector1_F093E635: 0.916
+    - Vector1_F093E635: 0.811
     - _AlphaCutoffEnable: 1
     - _AlphaDstBlend: 10
     - _AlphaSrcBlend: 1
@@ -65,7 +67,7 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 1
     m_Colors:
-    - Color_49C072C3: {r: 0.7253471, g: 0.8187967, b: 0.9433962, a: 0}
+    - Color_49C072C3: {r: 0.5506853, g: 0.71494687, b: 0.9339623, a: 0}
     - Color_E81266BD: {r: 1, g: 1, b: 1, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}

@@ -17,6 +17,7 @@
 	float _Radius;
 	float _InvertMask;
 	float4 _ViewPortSize; // We need the viewport size because we have a non fullscreen render target (blur buffers are downsampled in half res)
+	float4 _DepthParams;
 
 	#define SAMPLE_COUNT 32
 	static float gaussianWeights[SAMPLE_COUNT] = {0.03740084,
@@ -74,7 +75,9 @@
 
 		float4 color = SAMPLE_TEXTURE2D_X_LOD(_Source, s_trilinear_clamp_sampler, ClampUV(texcoord), 0) * gaussianWeights[0];
 
-		float radius = _Radius / SAMPLE_COUNT;
+		float linearDepth = LinearEyeDepth(LoadCameraDepth(varyings.positionCS.xy), _ZBufferParams);
+
+		float radius = (_Radius / linearDepth) / SAMPLE_COUNT;
 		for (int j = 1; j < SAMPLE_COUNT; j++)
 		{
 			float2 uvOffset = float2(1, 0) * j * radius;
@@ -93,7 +96,9 @@
 
 		float4 color = SAMPLE_TEXTURE2D_X_LOD(_Source, s_trilinear_clamp_sampler, ClampUV(texcoord), 0) * gaussianWeights[0];
 
-		float radius = _Radius / SAMPLE_COUNT;
+		float linearDepth = LinearEyeDepth(LoadCameraDepth(varyings.positionCS.xy), _ZBufferParams);
+
+		float radius = (_Radius / linearDepth) / SAMPLE_COUNT;
 		for (int j = 1; j < SAMPLE_COUNT; j++)
 		{
 			float2 uvOffset = float2(0, 1) * j * radius;

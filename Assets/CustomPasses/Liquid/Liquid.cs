@@ -66,13 +66,13 @@ class Liquid : CustomPass
         // Allocate the buffers used for the blur in half resolution to save some memory
         downSampleBuffer = RTHandles.Alloc(
             Vector2.one * 0.5f, TextureXR.slices, dimension: TextureXR.dimension,
-            colorFormat: GraphicsFormat.R16G16B16A16_SFloat,
+            colorFormat: GraphicsFormat.R16G16B16A16_SNorm,
             useDynamicScale: true, name: "DownSampleBuffer"
         );
 
         blurBuffer = RTHandles.Alloc(
             Vector2.one * 0.5f, TextureXR.slices, dimension: TextureXR.dimension,
-            colorFormat: GraphicsFormat.R16G16B16A16_SFloat,
+            colorFormat: GraphicsFormat.R16G16B16A16_SNorm,
             useDynamicScale: true, name: "BlurBuffer"
         );
 
@@ -125,13 +125,13 @@ class Liquid : CustomPass
             pass = transparentFullscreenShader.FindPass("ForwardOnly");
         
         // Move the mesh to the far plane of the camera
-        float ForwardDistance = hdCamera.camera.nearClipPlane + 0.000001f;
+        float ForwardDistance = hdCamera.camera.nearClipPlane + 0.0001f;
         cmd.DrawMesh(quad, Matrix4x4.TRS(hdCamera.camera.transform.position + hdCamera.camera.transform.forward * ForwardDistance, hdCamera.camera.transform.rotation, Vector3.one), transparentFullscreenShader, 0, pass);
     }
 
     // We need the viewport size in our shader because we're using half resolution render targets (and so the _ScreenSize
     // variable in the shader does not match the viewport).
-    void SetViewPortSize(CommandBuffer cmd, MaterialPropertyBlock block, RTHandle target)
+    void SetBlurParams(CommandBuffer cmd, MaterialPropertyBlock block, RTHandle target, Camera cam)
     {
         Vector2Int scaledViewportSize = target.GetScaledSize(target.rtHandleProperties.currentViewportSize);
         block.SetVector(ShaderID._ViewPortSize, new Vector4(scaledViewportSize.x, scaledViewportSize.y, 1.0f / scaledViewportSize.x, 1.0f / scaledViewportSize.y));
@@ -154,7 +154,7 @@ class Liquid : CustomPass
             var hBlurProperties = new MaterialPropertyBlock();
             hBlurProperties.SetFloat(ShaderID._Radius, radius / 100.0f);
             hBlurProperties.SetTexture(ShaderID._Source, downSampleBuffer); // The blur is 4 pixel wide in the shader
-            SetViewPortSize(cmd, hBlurProperties, blurBuffer);
+            SetBlurParams(cmd, hBlurProperties, blurBuffer, hdCam.camera);
             HDUtils.DrawFullScreen(cmd, blurMaterial, blurBuffer, hBlurProperties, shaderPassId: 0); // Do not forget the shaderPassId: ! or it won't work
         }
 
@@ -167,7 +167,7 @@ class Liquid : CustomPass
             // if they are in the same buffer
             vBlurProperties.SetFloat(ShaderID._Radius, radius / 100.0f);
             vBlurProperties.SetTexture(ShaderID._Source, blurBuffer);
-            SetViewPortSize(cmd, vBlurProperties, customColorBuffer);
+            SetBlurParams(cmd, vBlurProperties, customColorBuffer, hdCam.camera);
             HDUtils.DrawFullScreen(cmd, blurMaterial, customColorBuffer, vBlurProperties, shaderPassId: 1); // Do not forget the shaderPassId: ! or it won't work
         }
     }
