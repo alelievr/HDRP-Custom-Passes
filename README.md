@@ -63,7 +63,6 @@ Features:
 + Visual Effect Graph inside a custom pass
 + Overriding depth and normals of a fullscreen transparent to emulate a surface
 ![Liquid](https://user-images.githubusercontent.com/6877923/68505769-57233180-0268-11ea-9137-6983e859d214.gif)
-)
 
 ## Glass
 
