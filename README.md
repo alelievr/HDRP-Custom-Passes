@@ -63,4 +63,9 @@ Features:
 + Visual Effect Graph inside a custom pass
 + Overriding depth and normals of a fullscreen transparent to emulate a surface
 ![Liquid](https://user-images.githubusercontent.com/6877923/68505769-57233180-0268-11ea-9137-6983e859d214.gif)
-)
+
+## Glass
+
+Features:
++ Thickness aproximation using a custom pass rendering backfaces in custom depth
+![image](https://user-images.githubusercontent.com/32760367/68871276-76a0db00-06fc-11ea-9f97-db4c7b98dac1.png)
