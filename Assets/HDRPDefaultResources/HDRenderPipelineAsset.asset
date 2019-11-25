@@ -290,6 +290,7 @@ MonoBehaviour:
       checkerboardDepthBuffer: 1
       upsampleType: 1
     xrSettings:
+      singlePass: 1
       occlusionMesh: 1
     postProcessQualitySettings:
       NearBlurSampleCount: 030000000500000008000000
@@ -335,4 +336,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 68b14a52ba5436d4185e1e8bd55e22e8, type: 2}
   beforeTransparentCustomPostProcesses: []
   beforePostProcessCustomPostProcesses: []
-  afterPostProcessCustomPostProcesses: []
+  afterPostProcessCustomPostProcesses:
+  - CustomDOF, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  - RedTint, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  - Blur, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
