@@ -69,3 +69,9 @@ Features:
 Features:
 + Thickness aproximation using a custom pass rendering backfaces in custom depth
 ![image](https://user-images.githubusercontent.com/32760367/68871276-76a0db00-06fc-11ea-9f97-db4c7b98dac1.png)
+
+## Depth Capture
+
+Features:
++ Render objects from a different camera and output their depth in a depth buffer
+![image](https://user-images.githubusercontent.com/6877923/69529388-7dd3ae80-0f70-11ea-97f9-95a60acedd8d.png)
