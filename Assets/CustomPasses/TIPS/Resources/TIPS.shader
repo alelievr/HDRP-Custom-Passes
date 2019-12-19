@@ -104,7 +104,7 @@
         float4 meshColor = LoadCustomColor(posInput.positionSS.xy);
 
         // Change the color of the icosahedron mesh
-        meshColor = saturate(float4(_GlowColor, 1)) * meshColor;
+        meshColor = float4(_GlowColor, 1) * meshColor;
 
         // Transform the raw depth into eye space depth
         float sceneDepth = LinearEyeDepth(depth, _ZBufferParams);

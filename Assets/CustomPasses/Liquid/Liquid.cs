@@ -22,7 +22,7 @@ class Liquid : CustomPass
     [Range(0, 64)]
     public float        radius = 4;
     public LayerMask    layerMask = 0;
-    public Material     transparentFullscreenShader;
+    public Material     transparentFullscreenShader = null;
 
     Material    blurMaterial;
     Material    compositingMaterial;

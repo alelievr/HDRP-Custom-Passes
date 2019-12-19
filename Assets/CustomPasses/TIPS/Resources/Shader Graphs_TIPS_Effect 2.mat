@@ -20,8 +20,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_TIPS_Effect
-  m_Shader: {fileID: -6465566751694194690, guid: cae6f98ea6d145046a40c85d3a411a7c,
+  m_Name: Shader Graphs_TIPS_Effect 2
+  m_Shader: {fileID: -6465566751694194690, guid: b3fc90be27a6be2469677b1361354a18,
     type: 3}
   m_ShaderKeywords: _ALPHATEST_ON _BLENDMODE_ALPHA _SURFACE_TYPE_TRANSPARENT
   m_LightmapFlags: 4
@@ -43,6 +43,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Vector1_19A1CEEA: 0
+    - Vector1_2BBCF11C: 0.05
     - Vector1_C859BC5B: 0.611
     - _AlphaCutoff: 0.5
     - _AlphaCutoffEnable: 1
@@ -54,7 +55,7 @@ Material:
     - _DoubleSidedEnable: 0
     - _DoubleSidedNormalMode: 2
     - _DstBlend: 10
-    - _Intensity: 0.0036523012
+    - _Intensity: 10
     - _ReceivesSSR: 0
     - _RenderQueueType: 5
     - _RequireSplitLighting: 0
@@ -79,6 +80,6 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 1
     m_Colors:
-    - Color_6B40A2A6: {r: 1, g: 1, b: 1, a: 1}
+    - Color_6B40A2A6: {r: 1024, g: 0, b: 0, a: 0.46666667}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}

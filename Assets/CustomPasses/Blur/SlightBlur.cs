@@ -93,7 +93,7 @@ class SlightBlur : CustomPass
             {
                 maskDepthBuffer = RTHandles.Alloc(
                     Vector2.one, TextureXR.slices, dimension: TextureXR.dimension,
-                    colorFormat: GraphicsFormat.R16_UInt, useDynamicScale: true, isShadowMap: true,
+                    colorFormat: GraphicsFormat.R16_UInt, useDynamicScale: true,
                     name: "Blur Depth Mask", depthBufferBits: DepthBits.Depth16
                 );
             }
@@ -125,6 +125,7 @@ class SlightBlur : CustomPass
             sortingCriteria = SortingCriteria.BackToFront,
             excludeObjectMotionVectors = false,
             layerMask = maskLayer,
+            stateBlock = new RenderStateBlock(RenderStateMask.Depth){ depthState = new DepthState(true, CompareFunction.LessEqual)},
         };
 
         CoreUtils.SetRenderTarget(cmd, maskBuffer, maskDepthBuffer, ClearFlag.All);

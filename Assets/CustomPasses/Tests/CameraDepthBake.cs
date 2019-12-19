@@ -5,9 +5,9 @@ using UnityEngine.Experimental.Rendering;
 
 class CameraDepthBake : CustomPass
 {
-    public Camera           bakingCamera;
-    public RenderTexture    targetTexture;
-    public bool             render;
+    public Camera           bakingCamera = null;
+    public RenderTexture    targetTexture = null;
+    public bool             render = true;
     ShaderTagId[]           shaderTags;
 
     // It can be used to configure render targets and their clear state. Also to create temporary render target textures.
