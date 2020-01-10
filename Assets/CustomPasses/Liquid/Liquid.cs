@@ -52,7 +52,6 @@ class Liquid : CustomPass
     // The render pipeline will ensure target setup and clearing happens in an performance manner.
     protected override void Setup(ScriptableRenderContext renderContext, CommandBuffer cmd)
     {
-        Debug.Log("Alloc !");
         blurMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/FullScreen/BlurPasses"));
         compositingMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/FullScreen/LiquidCompositing"));
 
@@ -124,7 +123,7 @@ class Liquid : CustomPass
         int pass = transparentFullscreenShader.FindPass("Forward");
         if (pass == -1)
             pass = transparentFullscreenShader.FindPass("ForwardOnly");
-        
+
         // Move the mesh to the far plane of the camera
         float ForwardDistance = hdCamera.camera.nearClipPlane + 0.0001f;
         cmd.DrawMesh(quad, Matrix4x4.TRS(hdCamera.camera.transform.position + hdCamera.camera.transform.forward * ForwardDistance, hdCamera.camera.transform.rotation, Vector3.one), transparentFullscreenShader, 0, pass);
@@ -180,6 +179,5 @@ class Liquid : CustomPass
         CoreUtils.Destroy(quad);
         downSampleBuffer.Release();
         blurBuffer.Release();
-        Debug.Log("Cleanup !");
     }
 }
