@@ -77,7 +77,7 @@ class SlightBlur : CustomPass
 
                 colorCopy = RTHandles.Alloc(
                     Vector2.one, TextureXR.slices, dimension: TextureXR.dimension,
-                    colorFormat: (GraphicsFormat)colorBufferFormat, // We don't need alpha in the blur
+                    colorFormat: (GraphicsFormat)colorBufferFormat,
                     useDynamicScale: true, name: "Color Copy"
                 );
             }
@@ -114,6 +114,9 @@ class SlightBlur : CustomPass
             GenerateGaussianMips(cmd, hdCamera);
         }
     }
+
+    protected override void AggregateCullingParameters(ref ScriptableCullingParameters cullingParameters, HDCamera hdCamera)
+        => cullingParameters.cullingMask |= (uint)maskLayer.value;
 
     void DrawMaskObjects(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResult)
     {
