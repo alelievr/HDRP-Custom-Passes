@@ -134,6 +134,35 @@
         return float4(LOAD_TEXTURE2D_X_LOD(_TIPSBuffer, posInput.positionSS.xy, 0).rgb, 1);
     }
 
+    // Try to remove fireflies
+    float4 Blur(Varyings varyings) : SV_Target
+    {
+        float depth = LoadCameraDepth(varyings.positionCS.xy);
+        float meshDepth = LoadCustomDepth(varyings.positionCS.xy);
+        PositionInputs posInput = GetPositionInput(varyings.positionCS.xy, _ScreenSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
+
+        // It didn't worked :p
+        return float4(LOAD_TEXTURE2D_X_LOD(_TIPSBuffer, posInput.positionSS.xy, 0).rgb, 1);
+    
+        float3 color = LOAD_TEXTURE2D_X_LOD(_TIPSBuffer, posInput.positionSS.xy, 0).rgb;
+
+        // don't blur non outlined image
+        if (LinearEyeDepth(depth, _ZBufferParams) < LinearEyeDepth(meshDepth, _ZBufferParams) + 0.1)
+            return float4(color.r, 0, 0, 1);
+
+        float3 t;
+        for (float x = -1; x <= 1; x++)
+        for (float y = -1; y <= 1; y++)
+        {
+            t += LOAD_TEXTURE2D_X_LOD(_TIPSBuffer, posInput.positionSS.xy + float2(x, y), 0).rgb;
+        }
+
+        if (Luminance(t) < Luminance(_GlowColor) * 3)
+            color = 0;
+
+        return float4(color, 1);
+    }
+
     ENDHLSL
 
     SubShader
@@ -163,6 +192,20 @@
 
             HLSLPROGRAM
                 #pragma fragment Copy
+            ENDHLSL
+        }
+
+        Pass
+        {
+            Name "Blur"
+
+            ZWrite Off
+            ZTest Always
+            Blend Off
+            Cull Off
+
+            HLSLPROGRAM
+                #pragma fragment Blur
             ENDHLSL
         }
     }

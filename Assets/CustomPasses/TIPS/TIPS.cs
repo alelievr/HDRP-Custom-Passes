@@ -81,7 +81,7 @@ class TIPS : CustomPass
     RTHandle    tipsBuffer; // additional render target for compositing the custom and camera color buffers
 
     int         compositingPass;
-    int         copyPass;
+    int         blurPass;
 
     // It can be used to configure render targets and their clear state. Also to create temporary render target textures.
     // When empty this render pass will render to the active camera render target.
@@ -94,7 +94,7 @@ class TIPS : CustomPass
         tipsBuffer = RTHandles.Alloc(Vector2.one, TextureXR.slices, dimension: TextureXR.dimension, colorFormat: GraphicsFormat.R16G16B16A16_SFloat, useDynamicScale: true, name: "TIPS Buffer");
 
         compositingPass = fullscreenMaterial.FindPass("Compositing");
-        copyPass = fullscreenMaterial.FindPass("Copy");
+        blurPass = fullscreenMaterial.FindPass("Blur");
         targetColorBuffer = TargetBuffer.Custom;
         targetDepthBuffer = TargetBuffer.Custom;
         clearFlags = ClearFlag.All;
@@ -122,7 +122,7 @@ class TIPS : CustomPass
         CoreUtils.DrawFullScreen(cmd, fullscreenMaterial, shaderPassId: compositingPass);
 
         SetCameraRenderTarget(cmd);
-        CoreUtils.DrawFullScreen(cmd, fullscreenMaterial, shaderPassId: copyPass);
+        CoreUtils.DrawFullScreen(cmd, fullscreenMaterial, shaderPassId: blurPass);
     }
 
     protected override void Cleanup()
