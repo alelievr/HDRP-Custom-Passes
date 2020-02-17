@@ -54,7 +54,7 @@
     // We need to clamp the UVs to avoid bleeding from bigger render tragets (when we have multiple cameras)
     float2 ClampUVs(float2 uv)
     {
-        uv = clamp(uv, 0, _RTHandleScale.xy - _ViewPortSize.zw); // clamp UV to 1 pixel to avoid bleeding
+        uv = clamp(uv, 0, _RTHandleScale - _ScreenSize.zw * 2); // clamp UV to 1 pixel to avoid bleeding
         return uv;
     }
 
@@ -62,9 +62,8 @@
     {
         float depth = LoadCameraDepth(varyings.positionCS.xy);
         PositionInputs posInput = GetPositionInput(varyings.positionCS.xy, _ViewPortSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
-        return posInput.positionNDC.xy * _RTHandleScale;
+        return posInput.positionNDC.xy * _RTHandleScale.xy;
     }
-
 
     float4 HorizontalBlur(Varyings varyings) : SV_Target
     {
@@ -109,7 +108,7 @@
         float maskDepth = SAMPLE_TEXTURE2D_X_LOD(_MaskDepth, s_linear_clamp_sampler, uv, 0).r;
         float maskValue = 0;
 
-        maskValue = any(mask.rgb > 0.1) || (maskDepth > depth - 0.0001);
+        maskValue = any(mask.rgb > 0.1) || (maskDepth > depth - 0.0001 && maskDepth != 0);
 
         if (_InvertMask > 0.5)
             maskValue = !maskValue;
