@@ -16,7 +16,6 @@
 	TEXTURE2D_X_HALF(_MaskDepth);
 	float _Radius;
 	float _InvertMask;
-	float4 _ViewPortSize; // We need the viewport size because we have a non fullscreen render target (blur buffers are downsampled in half res)
 
 	#define SAMPLE_COUNT 32
 	static float gaussianWeights[SAMPLE_COUNT] = {0.03740084,
@@ -55,11 +54,11 @@
 
 	float2 GetSampleUVs(Varyings varyings)
 	{
-		return varyings.positionCS.xy * _ViewPortSize.zw;
+		return varyings.positionCS.xy * _ViewportSize.zw;
 		// TODO: simplify this
 		float depth = LoadCameraDepth(varyings.positionCS.xy);
 		//float linearDepth = Linear01Depth(depth,_ZBufferParams);
-		PositionInputs posInput = GetPositionInput(varyings.positionCS.xy, _ViewPortSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
+		PositionInputs posInput = GetPositionInput(varyings.positionCS.xy, _ViewportSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
 		return posInput.positionNDC.xy * _RTHandleScale;
 	}
 
