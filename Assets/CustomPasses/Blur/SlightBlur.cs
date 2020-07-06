@@ -213,8 +213,8 @@ class SlightBlur : CustomPass
         CoreUtils.Destroy(blurMaterial);
         CoreUtils.Destroy(whiteRenderersMaterial);
         downSampleBuffer.Release();
-        maskDepthBuffer.Release();
         blurBuffer.Release();
+        maskDepthBuffer?.Release();
         maskBuffer?.Release();
         colorCopy?.Release();
     }
