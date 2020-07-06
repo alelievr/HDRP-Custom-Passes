@@ -1,5 +1,5 @@
 # HDRP-Custom-Passes
-A bunch of custom passes made for HDRP. This project have been setup for Unity 19.3 version with HDRP 7.4.1. It should be compatiblke with all 19.3 version of HDRP.
+A bunch of custom passes made for HDRP. This project have been setup for Unity 19.3 version with HDRP 7.4.1. It should be compatible with all 19.3 version of HDRP.
 
 ## TIPS Effect:
 
