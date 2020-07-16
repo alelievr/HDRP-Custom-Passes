@@ -21,6 +21,12 @@ class SlightBlur : CustomPass
     RTHandle        colorCopy;
     ShaderTagId[]   shaderTags;
 
+    // Trick to always include these shaders in build
+    [SerializeField, HideInInspector]
+    Shader blurShader;
+    [SerializeField, HideInInspector]
+    Shader whiteRenderersShader;
+
     static class ShaderID
     {
         public static readonly int _BlitTexture = Shader.PropertyToID("_BlitTexture");
@@ -41,8 +47,13 @@ class SlightBlur : CustomPass
     // The render pipeline will ensure target setup and clearing happens in an performance manner.
     protected override void Setup(ScriptableRenderContext renderContext, CommandBuffer cmd)
     {
-        blurMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/FullScreen/Blur"));
-        whiteRenderersMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/Renderers/WhiteRenderers"));
+        if (blurBuffer == null)
+            blurShader = Shader.Find("Hidden/FullScreen/Blur");
+        if (whiteRenderersShader == null)
+            whiteRenderersShader = Shader.Find("Hidden/Renderers/WhiteRenderers");
+
+        blurMaterial = CoreUtils.CreateEngineMaterial(blurShader);
+        whiteRenderersMaterial = CoreUtils.CreateEngineMaterial(whiteRenderersShader);
 
         // Allocate the buffers used for the blur in half resolution to save some memory
         downSampleBuffer = RTHandles.Alloc(
