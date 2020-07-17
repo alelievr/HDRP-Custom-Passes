@@ -33,6 +33,12 @@ Effect made without custom C#, setup in the inspector:
 ![OutlineThickness](https://user-images.githubusercontent.com/6877923/66143724-f02ab100-e607-11e9-9fbf-af639112d17a.gif)
 ![OutlineColor2](https://user-images.githubusercontent.com/6877923/66144282-d89ff800-e608-11e9-8f57-29604e404916.gif)
 
+## See Through Effect:
+
+Source file link for this effect: [SeeThrough.cs](https://github.com/alelievr/HDRP-Custom-Passes/blob/master/Assets/CustomPasses/SeeThrough/SeeThrough.cs) and [SeeThroughStencil.shader](https://github.com/alelievr/HDRP-Custom-Passes/blob/master/Assets/CustomPasses/SeeThrough/SeeThroughStencil.shader)
+![SeeThrough](https://user-images.githubusercontent.com/6877923/87780070-37e49700-c82e-11ea-9d03-d5ce2a4410c6.gif)
+
+
 ## AR Effect:
 
 Features:
