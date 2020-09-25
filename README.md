@@ -81,3 +81,13 @@ Features:
 Features:
 + Render objects from a different camera and output their depth in a depth buffer
 ![image](https://user-images.githubusercontent.com/6877923/69529388-7dd3ae80-0f70-11ea-97f9-95a60acedd8d.png)
+
+## Render With Normal Buffer
+
+Rendering objects in the normal buffer is essential to make objects work with screen space effects. This example show how to create a custom pass that renders an object in the depth, normal and color buffer so the SSAO can correctly be applied (you can see the exagerated SSAO effect in this screenshot)
+
+![image](https://user-images.githubusercontent.com/6877923/94256977-e857d100-ff2a-11ea-84b9-79ff5c26c76b.png)
+
+And this is the same image without rendering the object to the normal buffer:
+![image](https://user-images.githubusercontent.com/6877923/94257125-1b9a6000-ff2b-11ea-98d4-a592798a075b.png)
+As you can see the SSAO is completely messed-up
