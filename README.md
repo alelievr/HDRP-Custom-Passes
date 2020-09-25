@@ -88,6 +88,10 @@ Rendering objects in the normal buffer is essential to make objects work with sc
 
 ![image](https://user-images.githubusercontent.com/6877923/94256977-e857d100-ff2a-11ea-84b9-79ff5c26c76b.png)
 
-And this is the same image without rendering the object to the normal buffer:
+And this is the same image without rendering the object to the normal buffer:  
 ![image](https://user-images.githubusercontent.com/6877923/94257125-1b9a6000-ff2b-11ea-98d4-a592798a075b.png)
 As you can see the SSAO is completely messed-up
+
+
+Note that because you need to render the object in both depth-prepass and forward pass, you need two custom passes volume with different injection points:  
+![image](https://user-images.githubusercontent.com/6877923/94257371-7cc23380-ff2b-11ea-8da8-895911a23103.png)
