@@ -152,6 +152,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   linkedScenes:
   - {fileID: 102900000, guid: b2fa8882363c4644b93046de18bcbf19, type: 3}
+  sceneNames:
+  - SciFi_Industrial_SampleLayout
 --- !u!4 &8048761
 Transform:
   m_ObjectHideFlags: 0
@@ -368,7 +370,8 @@ Transform:
   m_LocalRotation: {x: -0.010552648, y: -0.93212664, z: 0.02519818, w: -0.36110052}
   m_LocalPosition: {x: -2.978, y: 1.32, z: 46.273}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1667283652}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -438,6 +441,136 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1667283651
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 497139063}
+    m_Modifications:
+    - target: {fileID: 8040162854802574218, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_Name
+      value: NextButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040162855036921467, guid: fd157eea35f81404d8a188d264dd86cd,
+        type: 3}
+      propertyPath: nextSceneName
+      value: CameraDepthBaking
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: fd157eea35f81404d8a188d264dd86cd, type: 3}
+--- !u!224 &1667283652 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8040162854802574219, guid: fd157eea35f81404d8a188d264dd86cd,
+    type: 3}
+  m_PrefabInstance: {fileID: 1667283651}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2119612089
 GameObject:
   m_ObjectHideFlags: 0
@@ -469,6 +602,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isGlobal: 1
   fadeRadius: 0
+  priority: 0
   customPasses:
   - id: 0
   - id: 1
@@ -478,26 +612,29 @@ MonoBehaviour:
     00000000:
       type: {class: ScrollingFormulas, ns: , asm: NewAssembly}
       data:
-        name: Custom Pass
+        m_Name: Custom Pass
         enabled: 0
         targetColorBuffer: 0
         targetDepthBuffer: 0
         clearFlags: 0
         passFoldout: 1
+        m_Version: 0
         scrollingFormula: {fileID: 0}
     00000001:
       type: {class: FullScreenCustomPass, ns: UnityEngine.Rendering.HighDefinition,
         asm: Unity.RenderPipelines.HighDefinition.Runtime}
       data:
-        name: Custom Pass
+        m_Name: Custom Pass
         enabled: 1
         targetColorBuffer: 0
         targetDepthBuffer: 0
         clearFlags: 0
         passFoldout: 0
+        m_Version: 0
         fullscreenPassMaterial: {fileID: 2100000, guid: 31a98d0e0aa569f4c8c7b32d1c45ea94,
           type: 2}
         materialPassIndex: 0
+        materialPassName: Custom Pass 0
         fetchColorBuffer: 0
 --- !u!4 &2119612091
 Transform:

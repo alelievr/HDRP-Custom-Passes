@@ -84,6 +84,8 @@
 
     float4 FullScreenPass(Varyings varyings) : SV_Target
     {
+        UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(varyings);
+
         float depth = LoadCameraDepth(varyings.positionCS.xy);
         PositionInputs posInput = GetPositionInput(varyings.positionCS.xy, _ScreenSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
         float3 viewDirection = GetWorldSpaceNormalizeViewDir(posInput.positionWS);

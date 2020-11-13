@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cf1dab834d4ec34195b920ea7bbf9ec, type: 3}
   m_Name: HDRenderPipelineAsset
   m_EditorClassIdentifier: 
-  m_Version: 15
+  m_Version: 14
   m_ObsoleteFrameSettings:
     overrides: 0
     enableShadow: 0
@@ -157,7 +157,7 @@ MonoBehaviour:
     type: 2}
   m_RenderingPathDefaultCameraFrameSettings:
     bitDatas:
-      data1: 140649441525597
+      data1: 70280697347933
       data2: 4539628425463136256
     lodBias: 1
     lodBiasMode: 0
@@ -165,13 +165,10 @@ MonoBehaviour:
     maximumLODLevel: 0
     maximumLODLevelMode: 0
     maximumLODLevelQualityLevel: 0
-    sssQualityMode: 0
-    sssQualityLevel: 0
-    sssCustomSampleBudget: 20
     materialQuality: 0
   m_RenderingPathDefaultBakedOrCustomReflectionFrameSettings:
     bitDatas:
-      data1: 135310787769181
+      data1: 64942043591517
       data2: 4539628424389459968
     lodBias: 1
     lodBiasMode: 0
@@ -179,13 +176,10 @@ MonoBehaviour:
     maximumLODLevel: 0
     maximumLODLevelMode: 0
     maximumLODLevelQualityLevel: 0
-    sssQualityMode: 0
-    sssQualityLevel: 0
-    sssCustomSampleBudget: 20
     materialQuality: 0
   m_RenderingPathDefaultRealtimeReflectionFrameSettings:
     bitDatas:
-      data1: 140060864290653
+      data1: 69692120112989
       data2: 4539628424657895424
     lodBias: 1
     lodBiasMode: 0
@@ -193,21 +187,15 @@ MonoBehaviour:
     maximumLODLevel: 0
     maximumLODLevelMode: 0
     maximumLODLevelQualityLevel: 0
-    sssQualityMode: 0
-    sssQualityLevel: 0
-    sssCustomSampleBudget: 20
     materialQuality: 0
   m_RenderPipelineSettings:
     supportShadowMask: 1
     supportSSR: 1
-    supportSSRTransparent: 0
     supportSSAO: 1
     supportSubsurfaceScattering: 1
-    sssSampleBudget:
-      m_Values: 140000002800000050000000
-      m_SchemaId:
-        m_Id: With3Levels
+    increaseSssSampleCount: 0
     supportVolumetrics: 1
+    increaseResolutionOfVolumetrics: 0
     supportLightLayers: 0
     lightLayerName0: Light Layer default
     lightLayerName1: Light Layer 1
@@ -223,7 +211,7 @@ MonoBehaviour:
     supportTransparentDepthPostpass: 1
     colorBufferFormat: 74
     supportCustomPass: 1
-    customBufferFormat: 48
+    customBufferFormat: 12
     supportedLitShaderMode: 3
     supportDecals: 1
     msaaSampleCount: 1
@@ -231,15 +219,7 @@ MonoBehaviour:
     supportRuntimeDebugDisplay: 1
     supportDitheringCrossFade: 1
     supportTerrainHole: 0
-    supportProbeVolume: 0
     supportRayTracing: 0
-    supportedRayTracingMode: 3
-    probeVolumeSettings:
-      atlasWidth: 128
-      atlasHeight: 128
-      atlasDepth: 512
-      atlasOctahedralDepthWidth: 2048
-      atlasOctahedralDepthHeight: 2048
     lightLoopSettings:
       cookieAtlasSize: 512
       cookieFormat: 74
@@ -370,7 +350,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 68b14a52ba5436d4185e1e8bd55e22e8, type: 2}
   beforeTransparentCustomPostProcesses: []
   beforePostProcessCustomPostProcesses: []
-  afterPostProcessCustomPostProcesses:
-  - CustomDOF, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-  - RedTint, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-  - Blur, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  afterPostProcessCustomPostProcesses: []

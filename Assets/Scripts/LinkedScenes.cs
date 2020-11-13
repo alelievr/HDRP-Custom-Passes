@@ -27,14 +27,23 @@ public class LinkedScenes : MonoBehaviour
         sceneNames = linkedScenes.Select(l => l.name).ToArray();
 #endif
 
-        if (Application.isPlaying) return;
-        
         if (sceneNames != null && sceneNames.Length > 0)
         {
+            int countLoaded = SceneManager.sceneCount;
+            Scene[] loadedScenes = new Scene[countLoaded];
+            for (int i = 0; i < countLoaded; i++)
+                loadedScenes[i] = SceneManager.GetSceneAt(i);
             for (int i = 0; i < sceneNames.Length; ++i)
             {
+                // discard scene if it's already loaded
+                if (loadedScenes.Any(s => s.name == sceneNames[i]))
+                    continue;
+
 #if UNITY_EDITOR
-                EditorSceneManager.OpenScene(AssetDatabase.GetAssetPath(linkedScenes[i]), OpenSceneMode.Additive);
+                if (Application.isPlaying)
+                    SceneManager.LoadScene(sceneNames[i], LoadSceneMode.Additive);
+                else
+                    EditorSceneManager.OpenScene(AssetDatabase.GetAssetPath(linkedScenes[i]), OpenSceneMode.Additive);
 #else
                 SceneManager.LoadScene(sceneNames[i], LoadSceneMode.Additive);
 #endif
