@@ -95,3 +95,12 @@ As you can see the SSAO is completely messed-up
 
 Note that because you need to render the object in both depth-prepass and forward pass, you need two custom passes volume with different injection points:  
 ![image](https://user-images.githubusercontent.com/6877923/94257371-7cc23380-ff2b-11ea-8da8-895911a23103.png)
+
+## ScreenSpace Camera UI Blur
+
+This effect blurs the camera color buffer and renders the screenspace UI on top of it. It is intended to be used in the after post process injection point
+![UI_blur](https://user-images.githubusercontent.com/6877923/99794633-c04fad00-2b2a-11eb-8cef-7f253599d5cb.gif)
+
+Note that this custom pass also avoid z test issues when doing this kind of as the transparent objects are rendered after everything.
+
+![image](https://user-images.githubusercontent.com/6877923/99796085-29382480-2b2d-11eb-89b8-73c1cd16af48.png)

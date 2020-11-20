@@ -36,6 +36,7 @@
     TEXTURE2D_X(_ColorBufferCopy);
     TEXTURE2D_X_HALF(_Mask);
     TEXTURE2D_X_HALF(_MaskDepth);
+    float4 _ViewportSize;
     float _InvertMask;
 
     #pragma enable_d3d11_debug_symbols
@@ -57,7 +58,7 @@
     float4 CompositeMaskedBlur(Varyings varyings) : SV_Target
     {
         float depth = LoadCameraDepth(varyings.positionCS.xy);
-        float2 uv = ClampUVs(GetSampleUVs(varyings));
+        float2 uv = ClampUVs(varyings.positionCS.xy * _ScreenSize.zw * _RTHandleScale.xy);
 
         float4 blurredBuffer = SAMPLE_TEXTURE2D_X_LOD(_Source, s_linear_clamp_sampler, uv, 0).rgba;
         float4 mask = SAMPLE_TEXTURE2D_X_LOD(_Mask, s_linear_clamp_sampler, uv, 0);

@@ -24,7 +24,6 @@ class Liquid : CustomPass
     public LayerMask    layerMask = 0;
     public Material     transparentFullscreenShader = null;
 
-    Material    blurMaterial;
     Material    compositingMaterial;
     RTHandle    downSampleBuffer;
     RTHandle    blurBuffer;
@@ -37,7 +36,6 @@ class Liquid : CustomPass
         public static readonly int _BlitMipLevel = Shader.PropertyToID("_BlitMipLevel");
         public static readonly int _Radius = Shader.PropertyToID("_Radius");
         public static readonly int _Source = Shader.PropertyToID("_Source");
-        public static readonly int _ViewPortSize = Shader.PropertyToID("_ViewPortSize");
     }
 
     protected override void AggregateCullingParameters(ref ScriptableCullingParameters cullingParameters, HDCamera camera)
@@ -50,7 +48,6 @@ class Liquid : CustomPass
     // The render pipeline will ensure target setup and clearing happens in an performance manner.
     protected override void Setup(ScriptableRenderContext renderContext, CommandBuffer cmd)
     {
-        blurMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/FullScreen/BlurPasses"));
         compositingMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/FullScreen/LiquidCompositing"));
 
         // Allocate the buffers used for the blur in half resolution to save some memory
@@ -87,7 +84,7 @@ class Liquid : CustomPass
 
     protected override void Execute(CustomPassContext ctx)
     {
-        if (compositingMaterial == null || blurMaterial == null)
+        if (compositingMaterial == null)
         {
             Debug.LogError("Failed to load Liquid Pass Shaders");
             return;
@@ -97,7 +94,7 @@ class Liquid : CustomPass
 
         // Blur the custom buffer:
         var resRadius = radius * ctx.cameraColorBuffer.rtHandleProperties.rtHandleScale.x;
-        
+        CustomPassUtils.GaussianBlur(ctx, ctx.customColorBuffer.Value, ctx.customColorBuffer.Value, blurBuffer, 25, resRadius);
 
         HandmadeFullscreenShaderGraphPass(ctx);
     }
@@ -121,7 +118,6 @@ class Liquid : CustomPass
 
     protected override void Cleanup()
     {
-        CoreUtils.Destroy(blurMaterial);
         CoreUtils.Destroy(compositingMaterial);
         CoreUtils.Destroy(quad);
         downSampleBuffer.Release();

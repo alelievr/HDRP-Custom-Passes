@@ -43,7 +43,7 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 11
+  serializedVersion: 12
   m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -118,6 +118,8 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
+    maxJobWorkers: 0
+    preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
@@ -274,6 +276,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
 --- !u!223 &1094580659
 Canvas:
   m_ObjectHideFlags: 0
@@ -368,6 +371,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -628,7 +632,7 @@ PrefabInstance:
     - target: {fileID: 8040162855036921467, guid: fd157eea35f81404d8a188d264dd86cd,
         type: 3}
       propertyPath: nextSceneName
-      value: Glass
+      value: UI_ScreenSpaceBlur
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fd157eea35f81404d8a188d264dd86cd, type: 3}
@@ -690,6 +694,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -763,13 +768,14 @@ MonoBehaviour:
         clearFlags: 0
         passFoldout: 0
         m_Version: 0
-        radius: 5.3
+        radius: 6.08
         useMask: 1
         maskLayer:
           serializedVersion: 2
           m_Bits: 2048
         invertMask: 0
-        blurShader: {fileID: 4800000, guid: d82546742f9c2b94d909ada774b0aa86, type: 3}
+        compositeShader: {fileID: 4800000, guid: d82546742f9c2b94d909ada774b0aa86,
+          type: 3}
         whiteRenderersShader: {fileID: 4800000, guid: 8386dcbf863f5f94ba335f17fdf15443,
           type: 3}
 --- !u!4 &1592529269
@@ -839,6 +845,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.12941177}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -902,6 +909,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -926,6 +934,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!4 &1699215127
 Transform:
   m_ObjectHideFlags: 0
@@ -1114,6 +1123,11 @@ MonoBehaviour:
   dithering: 0
   stopNaNs: 0
   taaSharpenStrength: 0.6
+  TAAQuality: 1
+  taaHistorySharpening: 0.35
+  taaAntiFlicker: 0.5
+  taaMotionVectorRejection: 0
+  taaAntiHistoryRinging: 0
   physicalParameters:
     m_Iso: 200
     m_ShutterSpeed: 0.005
@@ -1123,6 +1137,7 @@ MonoBehaviour:
     m_BarrelClipping: 0.25
     m_Anamorphism: 0
   flipYMode: 0
+  xrRendering: 1
   fullscreenPassthrough: 0
   allowDynamicResolution: 0
   customRenderingSettings: 0
@@ -1131,6 +1146,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   hasPersistentHistory: 0
+  exposureTarget: {fileID: 0}
   m_RenderingPathCustomFrameSettings:
     bitDatas:
       data1: 70280697347933
@@ -1141,6 +1157,9 @@ MonoBehaviour:
     maximumLODLevel: 0
     maximumLODLevelMode: 0
     maximumLODLevelQualityLevel: 0
+    sssQualityMode: 0
+    sssQualityLevel: 0
+    sssCustomSampleBudget: 20
     materialQuality: 0
   renderingPathCustomFrameSettingsOverrideMask:
     mask:

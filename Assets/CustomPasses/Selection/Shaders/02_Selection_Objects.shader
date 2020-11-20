@@ -62,15 +62,6 @@
             float _MaxDistance;
 			float4 _SelectionColor;
 
-            // If you need to modify the vertex datas, you can uncomment this code
-            // Note: all the transformations here are done in object space
-//            #define HAVE_MESH_MODIFICATION
-//            AttributesMesh ApplyMeshModification(AttributesMesh input, float3 timeParameters)
-//            {
-//                input.positionOS += input.normalOS * 0.001;
-//                return input;
-//            }
-
             // Put the code to render the objects in your custom pass in this function
             void GetSurfaceAndBuiltinData(FragInputs fragInputs, float3 viewDirection, inout PositionInputs posInput, out SurfaceData surfaceData, out BuiltinData builtinData)
             {
@@ -78,6 +69,7 @@
 
                 // Write back the data to the output structures
                 ZERO_INITIALIZE(BuiltinData, builtinData); // No call to InitBuiltinData as we don't have any lighting
+                ZERO_INITIALIZE(SurfaceData, surfaceData); // No call to InitBuiltinData as we don't have any lighting
                 builtinData.opacity = 1;
                 builtinData.emissiveColor = float3(0, 0, 0);
                 surfaceData.color = float3(1,1,1) * _SelectionColor.rgb;

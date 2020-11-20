@@ -9,7 +9,7 @@ using UnityEngine.Video;
 public class SyncVideoAndAnim : MonoBehaviour
 {
     VideoPlayer videoPlayer;
-    new Animation animation;
+    Animation animation;
 
     bool firstUpdate = true;
     

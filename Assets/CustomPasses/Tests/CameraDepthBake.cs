@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.Rendering;
-using UnityEngine.Experimental.Rendering;
+using System.Reflection;
 
 class CameraDepthBake : CustomPass
 {
@@ -10,6 +10,14 @@ class CameraDepthBake : CustomPass
     public RenderTexture    normalTexture = null;
     public RenderTexture    tangentTexture = null;
     public bool             render = true;
+
+    FieldInfo cullingResultField;
+
+    protected override void Setup(ScriptableRenderContext renderContext, CommandBuffer cmd)
+    {
+        // Temporary hack for culling override in HDRP 10.x
+        cullingResultField = typeof(CustomPassContext).GetField(nameof(CustomPassContext.cullingResults));
+    }
 
     protected override void Execute(CustomPassContext ctx)
     {
@@ -21,7 +29,7 @@ class CameraDepthBake : CustomPass
 
         // Assign the custom culling result to the context
         // so it'll be used for the following operations
-        ctx.cullingResults = ctx.renderContext.Cull(ref cullingParams);
+        cullingResultField.SetValueDirect(__makeref(ctx), ctx.renderContext.Cull(ref cullingParams));
 
         // Depth
         CoreUtils.SetRenderTarget(ctx.cmd, depthTexture, ClearFlag.Depth);

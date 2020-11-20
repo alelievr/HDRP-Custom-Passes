@@ -37,7 +37,8 @@
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(varyings);
 
         // Scale the UV accourding to the current RTHandle and Viewport scale (set by CustomPassUtils.FullScreenPass())
-        float2 uv = GetViewportScaledUVs(varyings.positionCS);
+        // float2 uv = GetViewportScaledUVs(varyings.positionCS);
+        float2 uv = varyings.positionCS * _ScreenSize.zw * _RTHandleScale.xy;
         float4 outline = SAMPLE_TEXTURE2D_X_LOD(_OutlineBuffer, s_linear_clamp_sampler, uv, 0);
         outline.a = 0;
 
@@ -45,7 +46,7 @@
         {
             for (int i = 0; i < MAXSAMPLES; i++)
             {
-                float2 uvN = uv + _ViewportSize.zw * _RTHandleScale.xy * samplingPositions[i];
+                float2 uvN = uv + _ScreenSize.zw * _RTHandleScale.xy * samplingPositions[i];
                 float4 neighbour = SAMPLE_TEXTURE2D_X_LOD(_OutlineBuffer, s_linear_clamp_sampler, uvN, 0);
 
                 if (Luminance(neighbour) > _Threshold)
