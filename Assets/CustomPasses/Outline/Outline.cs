@@ -41,7 +41,7 @@ class Outline : CustomPass
         ctx.propertyBlock.SetFloat("_Threshold", Mathf.Max(0.000001f, threshold * 0.01f));
 
         // Render the outline as a fullscreen alpha-blended pass on top of the camera color
-        CoreUtils.DrawFullScreen(ctx.cmd, fullscreenOutline, ctx.cameraColorBuffer, shaderPassId: 0);
+        CoreUtils.DrawFullScreen(ctx.cmd, fullscreenOutline, ctx.cameraColorBuffer, shaderPassId: 0, properties: ctx.propertyBlock);
     }
 
     protected override void Cleanup()

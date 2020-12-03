@@ -37,11 +37,10 @@ class ScreenSpaceCameraUIBlur : CustomPass
         CustomPassUtils.GaussianBlur(ctx, ctx.cameraColorBuffer, ctx.cameraColorBuffer, downSampleBuffer, radius: blurRadius);
 
         ShaderTagId[] litForwardTags = { HDShaderPassNames.s_ForwardOnlyName, HDShaderPassNames.s_ForwardName, HDShaderPassNames.s_SRPDefaultUnlitName };
-        PerObjectData renderConfig = ctx.hdCamera.frameSettings.IsEnabled(FrameSettingsField.Shadowmask) ? PerObjectData.OcclusionProbe | PerObjectData.OcclusionProbeProxyVolume | PerObjectData.ShadowMask : PerObjectData.LightProbe | PerObjectData.Lightmaps | PerObjectData.LightProbeProxyVolume;
 
         var result = new RendererListDesc(litForwardTags, ctx.cullingResults, ctx.hdCamera.camera)
         {
-            rendererConfiguration = renderConfig,
+            rendererConfiguration = PerObjectData.None,
             renderQueueRange = RenderQueueRange.transparent,
             sortingCriteria = SortingCriteria.CommonTransparent,
             excludeObjectMotionVectors = false,
