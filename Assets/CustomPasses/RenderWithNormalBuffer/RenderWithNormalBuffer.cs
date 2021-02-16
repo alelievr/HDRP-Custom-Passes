@@ -23,17 +23,17 @@ class RenderWithNormalBuffer : CustomPass
     protected override void AggregateCullingParameters(ref ScriptableCullingParameters cullingParameters, HDCamera hdCamera)
         => cullingParameters.cullingMask |= (uint)layerMask.value;
 
-    protected override void Execute(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResult)
+    protected override void Execute(CustomPassContext ctx)
     {
         PerObjectData renderConfig = PerObjectData.LightProbe | PerObjectData.Lightmaps | PerObjectData.LightProbeProxyVolume;
-        if (hdCamera.frameSettings.IsEnabled(FrameSettingsField.Shadowmask))
+        if (ctx.hdCamera.frameSettings.IsEnabled(FrameSettingsField.Shadowmask))
             renderConfig |= PerObjectData.OcclusionProbe | PerObjectData.OcclusionProbeProxyVolume | PerObjectData.ShadowMask;
 
         // We use a different HDRP shader passes for depth prepass (where we write depth + normal) and forward (were we only write color)
         bool isDepthNormal = injectionPoint == CustomPassInjectionPoint.AfterOpaqueDepthAndNormal;
         var ids = isDepthNormal ? depthPrepassIds : forwardIds;
 
-        var result = new RendererListDesc(ids, cullingResult, hdCamera.camera)
+        var result = new RendererListDesc(ids, ctx.cullingResults, ctx.hdCamera.camera)
         {
             rendererConfiguration = renderConfig,
             renderQueueRange = GetRenderQueueRange(RenderQueueType.AllOpaque),
@@ -45,21 +45,19 @@ class RenderWithNormalBuffer : CustomPass
         if (isDepthNormal)
         {
             // Bind normal + depth buffer
-            var normalBuffer = GetNormalBuffer();
-            GetCameraBuffers(out _, out var depth);
-            CoreUtils.SetRenderTarget(cmd, normalBuffer, depth, ClearFlag.None);
+            CoreUtils.SetRenderTarget(ctx.cmd, ctx.cameraNormalBuffer, ctx.cameraDepthBuffer, ClearFlag.None);
 
             // Enable keyword to write normal in the depth pre-pass
-            CoreUtils.SetKeyword(cmd, "WRITE_NORMAL_BUFFER", true);
+            CoreUtils.SetKeyword(ctx.cmd, "WRITE_NORMAL_BUFFER", true);
         }
 
         // Render all the opaque objects in the layer
-        HDUtils.DrawRendererList(renderContext, cmd, RendererList.Create(result));
+        CoreUtils.DrawRendererList(ctx.renderContext, ctx.cmd, RendererList.Create(result));
 
         if (isDepthNormal)
         {
             // Reset the keyword to it's default value
-            CoreUtils.SetKeyword(cmd, "WRITE_NORMAL_BUFFER", hdCamera.frameSettings.litShaderMode == LitShaderMode.Forward);
+            CoreUtils.SetKeyword(ctx.cmd, "WRITE_NORMAL_BUFFER", ctx.hdCamera.frameSettings.litShaderMode == LitShaderMode.Forward);
         }
     }
 

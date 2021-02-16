@@ -103,18 +103,18 @@ class TIPS_2 : CustomPass
         clearFlags = ClearFlag.All;
     }
 
-    protected override void Execute(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult)
+    protected override void Execute(CustomPassContext ctx)
     {
         if (fullscreenMaterial == null)
             return ;
 
         if (mesh != null && tipsMeshMaterial != null)
         {
-            Transform cameraTransform = camera.camera.transform;
+            Transform cameraTransform = ctx.hdCamera.camera.transform;
             Matrix4x4 trs = Matrix4x4.TRS(cameraTransform.position, Quaternion.Euler(0f, Time.realtimeSinceStartup * rotationSpeed, Time.realtimeSinceStartup * rotationSpeed * 0.5f), Vector3.one * size);
             tipsMeshMaterial.SetFloat("_Intensity", 10);
             tipsMeshMaterial.SetColor("_Color", glowColor);
-            cmd.DrawMesh(mesh, trs, tipsMeshMaterial, 0, tipsMeshMaterial.FindPass("ForwardOnly"));
+            ctx.cmd.DrawMesh(mesh, trs, tipsMeshMaterial, 0, tipsMeshMaterial.FindPass("ForwardOnly"));
         }
 
         fullscreenMaterial.SetTexture("_TIPSBuffer", tipsBuffer);
@@ -122,11 +122,11 @@ class TIPS_2 : CustomPass
         fullscreenMaterial.SetColor("_GlowColor", glowColor);
         fullscreenMaterial.SetFloat("_EdgeRadius", (float)edgeRadius);
         fullscreenMaterial.SetFloat("_BypassMeshDepth", (mesh != null) ? 0 : size);
-        CoreUtils.SetRenderTarget(cmd, tipsBuffer, ClearFlag.All);
-        CoreUtils.DrawFullScreen(cmd, fullscreenMaterial, shaderPassId: compositingPass);
+        CoreUtils.SetRenderTarget(ctx.cmd, tipsBuffer, ClearFlag.All);
+        CoreUtils.DrawFullScreen(ctx.cmd, fullscreenMaterial, shaderPassId: compositingPass);
 
-        SetCameraRenderTarget(cmd);
-        CoreUtils.DrawFullScreen(cmd, fullscreenMaterial, shaderPassId: copyPass);
+        CoreUtils.SetRenderTarget(ctx.cmd, ctx.cameraColorBuffer, ctx.cameraDepthBuffer);
+        CoreUtils.DrawFullScreen(ctx.cmd, fullscreenMaterial, shaderPassId: copyPass);
     }
 
     protected override void Cleanup()

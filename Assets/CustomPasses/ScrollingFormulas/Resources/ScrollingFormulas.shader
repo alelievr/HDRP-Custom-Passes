@@ -63,8 +63,6 @@
         DecodeFromNormalBuffer(varyings.positionCS.xy, normalData);
         float3 normal = normalData.normalWS;
 
-        return float4(normal, 1);
-
         float3 offsetedPosition = worldPos.xyz - float3(0, 0, _SphereSize);
         float2 uvX = offsetedPosition.zy * _Scale;
         float2 uvY = offsetedPosition.xz * _Scale;

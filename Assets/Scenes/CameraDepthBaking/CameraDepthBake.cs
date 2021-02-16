@@ -21,10 +21,11 @@ class CameraDepthBake : CustomPass
 
     protected override void Execute(CustomPassContext ctx)
     {
-        if (!render || ctx.hdCamera.camera == bakingCamera)
+        if (!render || ctx.hdCamera.camera == bakingCamera || bakingCamera == null)
             return;
-
+        
         bakingCamera.TryGetCullingParameters(out var cullingParams);
+
         cullingParams.cullingOptions = CullingOptions.ShadowCasters;
 
         // Assign the custom culling result to the context
@@ -32,15 +33,25 @@ class CameraDepthBake : CustomPass
         cullingResultField.SetValueDirect(__makeref(ctx), ctx.renderContext.Cull(ref cullingParams));
 
         // Depth
-        CoreUtils.SetRenderTarget(ctx.cmd, depthTexture, ClearFlag.Depth);
-        CustomPassUtils.RenderDepthFromCamera(ctx, bakingCamera, bakingCamera.cullingMask);
+        if (depthTexture != null)
+        {
+            var overrideDepthTest = new RenderStateBlock(RenderStateMask.Depth) { depthState = new DepthState(true, CompareFunction.LessEqual) };
+            CoreUtils.SetRenderTarget(ctx.cmd, depthTexture, ClearFlag.Depth);
+            CustomPassUtils.RenderDepthFromCamera(ctx, bakingCamera, bakingCamera.cullingMask, overrideRenderState: overrideDepthTest);
+        }
 
         // Normal
-        CoreUtils.SetRenderTarget(ctx.cmd, normalTexture, normalTexture.depthBuffer, ClearFlag.Depth);
-        CustomPassUtils.RenderNormalFromCamera(ctx, bakingCamera, bakingCamera.cullingMask);
+        if (normalTexture != null)
+        {
+            CoreUtils.SetRenderTarget(ctx.cmd, normalTexture, normalTexture.depthBuffer, ClearFlag.Depth);
+            CustomPassUtils.RenderNormalFromCamera(ctx, bakingCamera, bakingCamera.cullingMask);
+        }
 
         // Tangent
-        CoreUtils.SetRenderTarget(ctx.cmd, tangentTexture, tangentTexture.depthBuffer, ClearFlag.Depth);
-        CustomPassUtils.RenderTangentFromCamera(ctx, bakingCamera, bakingCamera.cullingMask);
+        if (tangentTexture != null)
+        {
+            CoreUtils.SetRenderTarget(ctx.cmd, tangentTexture, tangentTexture.depthBuffer, ClearFlag.Depth);
+            CustomPassUtils.RenderTangentFromCamera(ctx, bakingCamera, bakingCamera.cullingMask);
+        }
     }
 }

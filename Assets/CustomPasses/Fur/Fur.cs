@@ -50,14 +50,14 @@ class Fur : CustomPass
 
     }
 
-    protected override void Execute(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResult)
+    protected override void Execute(CustomPassContext ctx)
     {
         if (scatterFurPointsMaterial == null)
             return;
 
         furData.SetCounterValue(0);
 
-        DrawObjectToFurify(renderContext, cmd, hdCamera, cullingResult);
+        DrawObjectToFurify(ctx.renderContext, ctx.cmd, ctx.hdCamera, ctx.cullingResults);
         // Executed every frame for all the camera inside the pass volume
     }
 
@@ -76,7 +76,7 @@ class Fur : CustomPass
 
         scatterFurPointsMaterial.SetBuffer("furData", furData);
         // CoreUtils.SetRenderTarget(cmd, furMask, maskDepthBuffer, ClearFlag.All);
-        HDUtils.DrawRendererList(renderContext, cmd, RendererList.Create(result));
+        CoreUtils.DrawRendererList(renderContext, cmd, RendererList.Create(result));
 
         if (furMesh != null && furMaterial != null)
         {

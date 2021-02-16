@@ -32,13 +32,13 @@ class SeeThrough : CustomPass
         };
     }
 
-    protected override void Execute(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResult)
+    protected override void Execute(CustomPassContext ctx)
     {
         // We first render objects into the user stencil bit 0, this will allow us to detect
         // if the object is behind another object.
         stencilMaterial.SetInt("_StencilWriteMask", (int)UserStencilUsage.UserBit0);
 
-        RenderObjects(renderContext, cmd, stencilMaterial, 0, CompareFunction.LessEqual, cullingResult, hdCamera);
+        RenderObjects(ctx.renderContext, ctx.cmd, stencilMaterial, 0, CompareFunction.LessEqual, ctx.cullingResults, ctx.hdCamera);
 
         // Then we render the objects that are behind walls using the stencil buffer with Greater Equal ZTest:
         StencilState seeThroughStencil = new StencilState(
@@ -46,7 +46,7 @@ class SeeThrough : CustomPass
             readMask: (byte)UserStencilUsage.UserBit0,
             compareFunction: CompareFunction.Equal
         );
-        RenderObjects(renderContext, cmd, seeThroughMaterial, seeThroughMaterial.FindPass("ForwardOnly"), CompareFunction.GreaterEqual, cullingResult, hdCamera, seeThroughStencil);
+        RenderObjects(ctx.renderContext, ctx.cmd, seeThroughMaterial, seeThroughMaterial.FindPass("ForwardOnly"), CompareFunction.GreaterEqual, ctx.cullingResults, ctx.hdCamera, seeThroughStencil);
     }
 
     public override IEnumerable<Material> RegisterMaterialForInspector() { yield return seeThroughMaterial; }
@@ -74,7 +74,7 @@ class SeeThrough : CustomPass
             result.stateBlock = block;
         }
 
-        HDUtils.DrawRendererList(renderContext, cmd, RendererList.Create(result));
+        CoreUtils.DrawRendererList(renderContext, cmd, RendererList.Create(result));
     }
 
     protected override void Cleanup()
