@@ -6,13 +6,13 @@ using UnityEngine.Profiling;
 
 class SlightBlur : CustomPass
 {
-    [Range(0, 8)]
+    [Range(0, 16)]
     public float        radius = 4;
     public bool         useMask = false;
     public LayerMask    maskLayer = 0;
     public bool         invertMask = false;
 
-    Material        blurMaterial;
+    Material        compositeMaterial;
     Material        whiteRenderersMaterial;
     RTHandle        downSampleBuffer;
     RTHandle        blurBuffer;
@@ -23,7 +23,7 @@ class SlightBlur : CustomPass
 
     // Trick to always include these shaders in build
     [SerializeField, HideInInspector]
-    Shader blurShader;
+    Shader compositeShader;
     [SerializeField, HideInInspector]
     Shader whiteRenderersShader;
 
@@ -47,12 +47,12 @@ class SlightBlur : CustomPass
     // The render pipeline will ensure target setup and clearing happens in an performance manner.
     protected override void Setup(ScriptableRenderContext renderContext, CommandBuffer cmd)
     {
-        if (blurBuffer == null)
-            blurShader = Shader.Find("Hidden/FullScreen/Blur");
+        if (compositeShader == null)
+            compositeShader = Resources.Load<Shader>("CompositeBlur");
         if (whiteRenderersShader == null)
             whiteRenderersShader = Shader.Find("Hidden/Renderers/WhiteRenderers");
 
-        blurMaterial = CoreUtils.CreateEngineMaterial(blurShader);
+        compositeMaterial = CoreUtils.CreateEngineMaterial(compositeShader);
         whiteRenderersMaterial = CoreUtils.CreateEngineMaterial(whiteRenderersShader);
 
         // Allocate the buffers used for the blur in half resolution to save some memory
@@ -111,109 +111,77 @@ class SlightBlur : CustomPass
         }
     }
 
-    protected override void Execute(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResult)
+    protected override void Execute(CustomPassContext ctx)
     {
         AllocateMaskBuffersIfNeeded();
 
-        if (blurMaterial != null && radius > 0)
+        if (compositeMaterial != null && radius > 0)
         {
             if (useMask)
             {
-                DrawMaskObjects(renderContext, cmd, hdCamera, cullingResult);
+                CoreUtils.SetRenderTarget(ctx.cmd, maskBuffer, maskDepthBuffer, ClearFlag.All);
+                CustomPassUtils.DrawRenderers(ctx, maskLayer, overrideRenderState: new RenderStateBlock(RenderStateMask.Depth){ depthState = new DepthState(true, CompareFunction.LessEqual)});
+                // DrawMaskObjects(renderContext, cmd, hdCamera, cullingResult);
             }
 
-            GenerateGaussianMips(cmd, hdCamera);
+            GenerateGaussianMips(ctx);
         }
     }
 
     protected override void AggregateCullingParameters(ref ScriptableCullingParameters cullingParameters, HDCamera hdCamera)
         => cullingParameters.cullingMask |= (uint)maskLayer.value;
 
-    void DrawMaskObjects(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResult)
-    {
-        // Render the objects in the layer blur mask into a mask buffer with their materials so we keep the alpha-clip and transparency if there is any.
-        var result = new RendererListDesc(shaderTags, cullingResult, hdCamera.camera)
-        {
-            rendererConfiguration = PerObjectData.None,
-            renderQueueRange = RenderQueueRange.all,
-            sortingCriteria = SortingCriteria.BackToFront,
-            excludeObjectMotionVectors = false,
-            layerMask = maskLayer,
-            stateBlock = new RenderStateBlock(RenderStateMask.Depth){ depthState = new DepthState(true, CompareFunction.LessEqual)},
-        };
+    // void DrawMaskObjects(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResult)
+    // {
+    //     // Render the objects in the layer blur mask into a mask buffer with their materials so we keep the alpha-clip and transparency if there is any.
+    //     var result = new RendererListDesc(shaderTags, cullingResult, hdCamera.camera)
+    //     {
+    //         rendererConfiguration = PerObjectData.None,
+    //         renderQueueRange = RenderQueueRange.all,
+    //         sortingCriteria = SortingCriteria.BackToFront,
+    //         excludeObjectMotionVectors = false,
+    //         layerMask = maskLayer,
+    //         stateBlock = ,
+    //     };
 
-        CoreUtils.SetRenderTarget(cmd, maskBuffer, maskDepthBuffer, ClearFlag.All);
-        HDUtils.DrawRendererList(renderContext, cmd, RendererList.Create(result));
-    }
+    //     CoreUtils.SetRenderTarget(cmd, maskBuffer, maskDepthBuffer, ClearFlag.All);
+    //     HDUtils.DrawRendererList(renderContext, cmd, RendererList.Create(result));
+    // }
 
     // We need the viewport size in our shader because we're using half resolution render targets (and so the _ScreenSize
     // variable in the shader does not match the viewport).
     void SetViewPortSize(CommandBuffer cmd, MaterialPropertyBlock block, RTHandle target)
     {
         Vector2Int scaledViewportSize = target.GetScaledSize(target.rtHandleProperties.currentViewportSize);
-        block.SetVector(ShaderID._ViewPortSize, new Vector4(scaledViewportSize.x, scaledViewportSize.y, 1.0f / scaledViewportSize.x, 1.0f / scaledViewportSize.y));
+        block.SetVector(ShaderID._ViewPortSize, new Vector4(scaledViewportSize.x, scaledViewportSize.y, 1.0f / (float)scaledViewportSize.x, 1.0f / (float)scaledViewportSize.y));
     }
 
-    void GenerateGaussianMips(CommandBuffer cmd, HDCamera hdCam)
+    void GenerateGaussianMips(CustomPassContext ctx)
     {
-        RTHandle source;
-
-        // Retrieve the target buffer of the blur from the UI:
-        if (targetColorBuffer == TargetBuffer.Camera)
-            GetCameraBuffers(out source, out _);
-        else
-            GetCustomBuffers(out source, out _);
+        RTHandle source = (targetColorBuffer == TargetBuffer.Camera) ? ctx.cameraColorBuffer : ctx.customColorBuffer.Value;
 
         // Save the non blurred color into a copy if the mask is enabled:
         if (useMask)
-            cmd.CopyTexture(source, colorCopy);
+            ctx.cmd.CopyTexture(source, colorCopy);
 
-        // Downsample
-        using (new ProfilingSample(cmd, "Downsample", CustomSampler.Create("Downsample")))
-        {
-            // This Blit will automatically downsample the color because our target buffer have been allocated in half resolution
-            HDUtils.BlitCameraTexture(cmd, source, downSampleBuffer, 0);
-        }
-
-        // Horizontal Blur
-        using (new ProfilingSample(cmd, "H Blur", CustomSampler.Create("H Blur")))
-        {
-            var hBlurProperties = new MaterialPropertyBlock();
-            hBlurProperties.SetFloat(ShaderID._Radius, radius / 4.0f); // The blur is 4 pixel wide in the shader
-            hBlurProperties.SetTexture(ShaderID._Source, downSampleBuffer); // The blur is 4 pixel wide in the shader
-            SetViewPortSize(cmd, hBlurProperties, blurBuffer);
-            HDUtils.DrawFullScreen(cmd, blurMaterial, blurBuffer, hBlurProperties, shaderPassId: 0); // Do not forget the shaderPassId: ! or it won't work
-        }
-
-        // Copy back the result in the color buffer while doing a vertical blur
-        using (new ProfilingSample(cmd, "V Blur + Copy back", CustomSampler.Create("V Blur + Copy back")))
-        {
-            var vBlurProperties = new MaterialPropertyBlock();
-            // When we use a mask, we do the vertical blur into the downsampling buffer instead of the camera buffer
-            // We need that because we're going to write to the color buffer and read from this blured buffer which we can't do
-            // if they are in the same buffer
-            vBlurProperties.SetFloat(ShaderID._Radius, radius / 4.0f); // The blur is 4 pixel wide in the shader
-            vBlurProperties.SetTexture(ShaderID._Source, blurBuffer);
-            var targetBuffer = (useMask) ? downSampleBuffer : source; 
-            SetViewPortSize(cmd, vBlurProperties, targetBuffer);
-            HDUtils.DrawFullScreen(cmd, blurMaterial, targetBuffer, vBlurProperties, shaderPassId: 1); // Do not forget the shaderPassId: ! or it won't work
-        }
+        var targetBuffer = (useMask) ? downSampleBuffer : source; 
+        CustomPassUtils.GaussianBlur(ctx, source, targetBuffer, blurBuffer, radius: radius);
 
         if (useMask)
         {
             // Merge the non blur copy and the blurred version using the mask buffers
-            using (new ProfilingSample(cmd, "Compose Mask Blur", CustomSampler.Create("Compose Mask Blur")))
+            using (new ProfilingScope(ctx.cmd, new ProfilingSampler("Compose Mask Blur")))
             {
                 var compositingProperties = new MaterialPropertyBlock();
 
-                compositingProperties.SetFloat(ShaderID._Radius, radius / 4.0f); // The blur is 4 pixel wide in the shader
+                compositingProperties.SetFloat(ShaderID._Radius, radius / 4f); // The blur is 4 pixel wide in the shader
                 compositingProperties.SetTexture(ShaderID._Source, downSampleBuffer);
                 compositingProperties.SetTexture(ShaderID._ColorBufferCopy, colorCopy);
                 compositingProperties.SetTexture(ShaderID._Mask, maskBuffer);
                 compositingProperties.SetTexture(ShaderID._MaskDepth, maskDepthBuffer);
                 compositingProperties.SetFloat(ShaderID._InvertMask, invertMask ? 1 : 0);
-                SetViewPortSize(cmd, compositingProperties, source);
-                HDUtils.DrawFullScreen(cmd, blurMaterial, source, compositingProperties, shaderPassId: 2); // Do not forget the shaderPassId: ! or it won't work
+                SetViewPortSize(ctx.cmd, compositingProperties, source);
+                HDUtils.DrawFullScreen(ctx.cmd, compositeMaterial, source, compositingProperties, shaderPassId: 0); // Do not forget the shaderPassId: ! or it won't work
             }
         }
     }
@@ -221,7 +189,7 @@ class SlightBlur : CustomPass
     // release all resources
     protected override void Cleanup()
     {
-        CoreUtils.Destroy(blurMaterial);
+        CoreUtils.Destroy(compositeMaterial);
         CoreUtils.Destroy(whiteRenderersMaterial);
         downSampleBuffer.Release();
         blurBuffer.Release();

@@ -100,29 +100,30 @@ class TIPS : CustomPass
         clearFlags = ClearFlag.All;
     }
 
-    protected override void Execute(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult)
+    protected override void Execute(CustomPassContext ctx)
     {
         if (fullscreenMaterial == null)
             return ;
 
         if (mesh != null && tipsMeshMaterial != null)
         {
-            Transform cameraTransform = camera.camera.transform;
+            Transform cameraTransform = ctx.hdCamera.camera.transform;
             Matrix4x4 trs = Matrix4x4.TRS(cameraTransform.position, Quaternion.Euler(0f, Time.realtimeSinceStartup * rotationSpeed, Time.realtimeSinceStartup * rotationSpeed * 0.5f), Vector3.one * size);
             tipsMeshMaterial.SetFloat("_Intensity", (0.2f / size) * kMaxDistance);
-            cmd.DrawMesh(mesh, trs, tipsMeshMaterial, 0, tipsMeshMaterial.FindPass("ForwardOnly"));
+            ctx.cmd.DrawMesh(mesh, trs, tipsMeshMaterial, 0, tipsMeshMaterial.FindPass("ForwardOnly"));
         }
 
-        fullscreenMaterial.SetTexture("_TIPSBuffer", tipsBuffer);
-        fullscreenMaterial.SetFloat("_EdgeDetectThreshold", edgeDetectThreshold);
-        fullscreenMaterial.SetColor("_GlowColor", glowColor);
-        fullscreenMaterial.SetFloat("_EdgeRadius", (float)edgeRadius);
-        fullscreenMaterial.SetFloat("_BypassMeshDepth", (mesh != null) ? 0 : size);
-        CoreUtils.SetRenderTarget(cmd, tipsBuffer, ClearFlag.All);
-        CoreUtils.DrawFullScreen(cmd, fullscreenMaterial, shaderPassId: compositingPass);
+        ctx.propertyBlock.SetTexture("_TIPSBuffer", tipsBuffer);
+        ctx.propertyBlock.SetFloat("_EdgeDetectThreshold", edgeDetectThreshold);
+        ctx.propertyBlock.SetColor("_GlowColor", glowColor);
+        ctx.propertyBlock.SetFloat("_EdgeRadius", (float)edgeRadius);
+        ctx.propertyBlock.SetFloat("_BypassMeshDepth", (mesh != null) ? 0 : size);
+        // CustomPassUtils.FullScreenPass(ctx, fullscreenMaterial, compositingPass, tipsBuffer, clearFlag: ClearFlag.Color);
+        CoreUtils.SetRenderTarget(ctx.cmd, tipsBuffer, ClearFlag.Color);
+        CoreUtils.DrawFullScreen(ctx.cmd, fullscreenMaterial, shaderPassId: compositingPass, properties: ctx.propertyBlock);
 
-        SetCameraRenderTarget(cmd);
-        CoreUtils.DrawFullScreen(cmd, fullscreenMaterial, shaderPassId: blurPass);
+        // CustomPassUtils.FullScreenPass(ctx, fullscreenMaterial, blurPass, ctx.cameraColorBuffer);
+        CoreUtils.DrawFullScreen(ctx.cmd, fullscreenMaterial, ctx.cameraColorBuffer, shaderPassId: blurPass, properties: ctx.propertyBlock);
     }
 
     protected override void Cleanup()

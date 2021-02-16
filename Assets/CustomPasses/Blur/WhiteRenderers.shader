@@ -84,6 +84,7 @@
 
                 // Write back the data to the output structures
                 ZERO_INITIALIZE(BuiltinData, builtinData); // No call to InitBuiltinData as we don't have any lighting
+                ZERO_INITIALIZE(SurfaceData, surfaceData); // No call to InitBuiltinData as we don't have any lighting
                 builtinData.opacity = opacity;
                 builtinData.emissiveColor = float3(0, 0, 0);
                 surfaceData.color = float3(1, 1, 1);
