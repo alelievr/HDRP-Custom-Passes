@@ -21,7 +21,7 @@ class CameraDepthBake : CustomPass
 
     protected override void Execute(CustomPassContext ctx)
     {
-        if (!render || ctx.hdCamera.camera == bakingCamera || bakingCamera == null)
+        if (!render || ctx.hdCamera.camera == bakingCamera || bakingCamera == null || ctx.hdCamera.camera.cameraType == CameraType.SceneView)
             return;
         
         bakingCamera.TryGetCullingParameters(out var cullingParams);
@@ -31,11 +31,16 @@ class CameraDepthBake : CustomPass
         // Assign the custom culling result to the context
         // so it'll be used for the following operations
         cullingResultField.SetValueDirect(__makeref(ctx), ctx.renderContext.Cull(ref cullingParams));
+        var overrideDepthTest = new RenderStateBlock(RenderStateMask.Depth) { depthState = new DepthState(true, CompareFunction.LessEqual) };
+
+        // Sync baking camera aspect ratio with RT (see https://github.com/alelievr/HDRP-Custom-Passes/issues/24)
+        bakingCamera.aspect = ctx.hdCamera.camera.aspect;
+        bakingCamera.pixelRect = ctx.hdCamera.camera.pixelRect;
 
         // Depth
         if (depthTexture != null)
         {
-            var overrideDepthTest = new RenderStateBlock(RenderStateMask.Depth) { depthState = new DepthState(true, CompareFunction.LessEqual) };
+            SyncRenderTextureAspect(depthTexture, ctx.hdCamera.camera);
             CoreUtils.SetRenderTarget(ctx.cmd, depthTexture, ClearFlag.Depth);
             CustomPassUtils.RenderDepthFromCamera(ctx, bakingCamera, bakingCamera.cullingMask, overrideRenderState: overrideDepthTest);
         }
@@ -43,15 +48,33 @@ class CameraDepthBake : CustomPass
         // Normal
         if (normalTexture != null)
         {
-            CoreUtils.SetRenderTarget(ctx.cmd, normalTexture, normalTexture.depthBuffer, ClearFlag.Depth);
-            CustomPassUtils.RenderNormalFromCamera(ctx, bakingCamera, bakingCamera.cullingMask);
+            SyncRenderTextureAspect(normalTexture, ctx.hdCamera.camera);
+            CoreUtils.SetRenderTarget(ctx.cmd, normalTexture, normalTexture.depthBuffer, ClearFlag.All);
+            CustomPassUtils.RenderNormalFromCamera(ctx, bakingCamera, bakingCamera.cullingMask, overrideRenderState: overrideDepthTest);
         }
 
         // Tangent
         if (tangentTexture != null)
         {
-            CoreUtils.SetRenderTarget(ctx.cmd, tangentTexture, tangentTexture.depthBuffer, ClearFlag.Depth);
-            CustomPassUtils.RenderTangentFromCamera(ctx, bakingCamera, bakingCamera.cullingMask);
+            SyncRenderTextureAspect(tangentTexture, ctx.hdCamera.camera);
+            CoreUtils.SetRenderTarget(ctx.cmd, tangentTexture, tangentTexture.depthBuffer, ClearFlag.All);
+            CustomPassUtils.RenderTangentFromCamera(ctx, bakingCamera, bakingCamera.cullingMask, overrideRenderState: overrideDepthTest);
+        }
+        // ctx.hdCamera.camera.pixelRect = oldRect;
+    }
+
+    // Resize the render texture to match the aspect ratio of the camera (it avoid stretching issues).
+    void SyncRenderTextureAspect(RenderTexture rt, Camera camera)
+    {
+        float aspect = rt.width / (float)rt.height;
+
+        if (!Mathf.Approximately(aspect, camera.aspect))
+        {
+            rt.Release();
+            rt.width = camera.pixelWidth;
+            rt.height = camera.pixelHeight;
+            rt.Create();
+            // Debug.Log(normalTexture.width + " | " + normalTexture.height);
         }
     }
 }
