@@ -44,7 +44,7 @@
     // We need to clamp the UVs to avoid bleeding from bigger render tragets (when we have multiple cameras)
     float2 ClampUVs(float2 uv)
     {
-        uv = clamp(uv, 0, _RTHandleScale - _ScreenSize.zw * 2); // clamp UV to 1 pixel to avoid bleeding
+        uv = clamp(uv, 0, _RTHandleScale.xy - _ScreenSize.zw * 2); // clamp UV to 1 pixel to avoid bleeding
         return uv;
     }
 

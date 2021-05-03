@@ -104,3 +104,19 @@ This effect blurs the camera color buffer and renders the screenspace UI on top 
 Note that this custom pass also avoid z test issues when doing this kind of as the transparent objects are rendered after everything.
 
 ![image](https://user-images.githubusercontent.com/6877923/99796085-29382480-2b2d-11eb-89b8-73c1cd16af48.png)
+
+
+## Render Video Without TAA
+
+This effect allows you to render an object (for example a video player) without TAA. It uses custom post processes to achieve this, so be sure to have the "VideoPlaybackWithoutTAAPostProcess" post process in your HDRP default settings:
+
+![image](https://user-images.githubusercontent.com/6877923/116881655-d1493200-ac23-11eb-9590-47e9a110f20e.png).
+
+As you can see in the videos, this pass will remove all artifacts visible when an object doesn't have valid motion vector data (which is the case for most texture animation or video playback):
+
+With TAA:  
+https://user-images.githubusercontent.com/6877923/116881360-77e10300-ac23-11eb-8a19-f176d2364f11.mp4
+Without TAA:  
+https://user-images.githubusercontent.com/6877923/116881366-78799980-ac23-11eb-97b0-5f8aa18f9b3c.mp4
+
+By default in this effect, the `fixDepthBufferJittering` field is disabled because it's a very costly operation (re-render all the objects in the scene into an unjittered depth buffer) but it allows to get rid of all TAA artifacts remaining after you add this effect (mainly depth jittering).

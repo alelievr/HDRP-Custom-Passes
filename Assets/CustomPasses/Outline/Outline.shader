@@ -38,7 +38,7 @@
 
         // Scale the UV accourding to the current RTHandle and Viewport scale (set by CustomPassUtils.FullScreenPass())
         // float2 uv = GetViewportScaledUVs(varyings.positionCS);
-        float2 uv = varyings.positionCS * _ScreenSize.zw * _RTHandleScale.xy;
+        float2 uv = varyings.positionCS.xy * _ScreenSize.zw * _RTHandleScale.xy;
         float4 outline = SAMPLE_TEXTURE2D_X_LOD(_OutlineBuffer, s_linear_clamp_sampler, uv, 0);
         outline.a = 0;
 

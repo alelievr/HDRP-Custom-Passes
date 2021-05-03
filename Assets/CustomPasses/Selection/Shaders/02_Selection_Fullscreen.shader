@@ -101,7 +101,7 @@
         
         uint offset = 5;
         
-        int sampleCount = min( 2 * pow(2, _SamplePrecision ), MAXSAMPLES ) ;
+        uint sampleCount = min( 2 * pow(2, _SamplePrecision ), MAXSAMPLES ) ;
         
         float4 outline = float4(0,0,0,0);
         
