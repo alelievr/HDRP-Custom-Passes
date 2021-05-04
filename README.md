@@ -120,3 +120,8 @@ Without TAA:
 https://user-images.githubusercontent.com/6877923/116881366-78799980-ac23-11eb-97b0-5f8aa18f9b3c.mp4
 
 By default in this effect, the `fixDepthBufferJittering` field is disabled because it's a very costly operation (re-render all the objects in the scene into an unjittered depth buffer) but it allows to get rid of all TAA artifacts remaining after you add this effect (mainly depth jittering).
+
+## Render Object Motion Vectors
+
+Render the Object motion vectors (not camera motion vectors!) into a render texture
+![image](https://user-images.githubusercontent.com/6877923/116994966-c05af800-acd9-11eb-8534-f582600047d2.png)

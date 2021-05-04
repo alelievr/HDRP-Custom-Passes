@@ -9,6 +9,8 @@ public class SyncAspectRatioDebug : MonoBehaviour
     public RawImage ui;
     public RenderTexture debugtexture;
 
+    public float debugSize = 0.3f;
+
     RectTransform rt;
 
     void Start() => rt = GetComponent<RectTransform>();
@@ -16,6 +18,6 @@ public class SyncAspectRatioDebug : MonoBehaviour
     void Update()
     {
         ui.texture = debugtexture;
-        rt.sizeDelta = new Vector2(debugtexture.width, debugtexture.height) * 0.3f;
+        rt.sizeDelta = new Vector2(debugtexture.width, debugtexture.height) * debugSize;
     }
 }
