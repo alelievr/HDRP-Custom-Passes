@@ -114,12 +114,17 @@ This effect allows you to render an object (for example a video player) without 
 
 As you can see in the videos, this pass will remove all artifacts visible when an object doesn't have valid motion vector data (which is the case for most texture animation or video playback):
 
-With TAA:  
+With TAA:
+
 https://user-images.githubusercontent.com/6877923/116881360-77e10300-ac23-11eb-8a19-f176d2364f11.mp4
-Without TAA:  
+
+Without TAA:
+
 https://user-images.githubusercontent.com/6877923/116881366-78799980-ac23-11eb-97b0-5f8aa18f9b3c.mp4
 
 By default in this effect, the `fixDepthBufferJittering` field is disabled because it's a very costly operation (re-render all the objects in the scene into an unjittered depth buffer) but it allows to get rid of all TAA artifacts remaining after you add this effect (mainly depth jittering).
+
+Custom pass effect sources: [Assets/CustomPasses/Video Playback Without TAA](https://github.com/alelievr/HDRP-Custom-Passes/tree/master/Assets/CustomPasses/Video%20Playback%20Without%20TAA).
 
 ## Render Object Motion Vectors
 
