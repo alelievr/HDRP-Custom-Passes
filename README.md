@@ -130,3 +130,5 @@ Custom pass effect sources: [Assets/CustomPasses/Video Playback Without TAA](htt
 
 Render the Object motion vectors (not camera motion vectors!) into a render texture
 ![image](https://user-images.githubusercontent.com/6877923/116994966-c05af800-acd9-11eb-8534-f582600047d2.png)
+
+Sources: [Assets/CustomPasses/RenderMotionVectors](https://github.com/alelievr/HDRP-Custom-Passes/tree/master/Assets/CustomPasses/RenderMotionVectors)
