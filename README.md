@@ -132,3 +132,16 @@ Render the Object motion vectors (not camera motion vectors!) into a render text
 ![image](https://user-images.githubusercontent.com/6877923/116994966-c05af800-acd9-11eb-8534-f582600047d2.png)
 
 Sources: [Assets/CustomPasses/RenderMotionVectors](https://github.com/alelievr/HDRP-Custom-Passes/tree/master/Assets/CustomPasses/RenderMotionVectors)
+
+## Copy Buffer
+
+Custom pass that can copy the following buffers to a render texture:
+- Color
+- Normal
+- Roughness
+- Depth
+- Motion Vectors
+
+![image](https://user-images.githubusercontent.com/6877923/124479199-524cb300-dda6-11eb-8525-9d009617327f.png)
+
+Source: [Assets/CustomPasses/CopyPass](https://github.com/alelievr/HDRP-Custom-Passes/tree/master/Assets/CustomPasses/CopyPass)
