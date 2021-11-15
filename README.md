@@ -1,5 +1,5 @@
 # HDRP-Custom-Passes
-A bunch of custom passes made for HDRP. This project have been setup for Unity 2020.3 version with HDRP 10.x.
+A bunch of custom passes made for HDRP. This project have been setup for Unity 2021.1 version with HDRP 12.x.
 
 ## TIPS Effect:
 
