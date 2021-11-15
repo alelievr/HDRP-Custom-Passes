@@ -38,7 +38,7 @@ class ScreenSpaceCameraUIBlur : CustomPass
 
         ShaderTagId[] litForwardTags = { HDShaderPassNames.s_ForwardOnlyName, HDShaderPassNames.s_ForwardName, HDShaderPassNames.s_SRPDefaultUnlitName };
 
-        var result = new RendererListDesc(litForwardTags, ctx.cullingResults, ctx.hdCamera.camera)
+        var result = new UnityEngine.Rendering.RendererUtils.RendererListDesc(litForwardTags, ctx.cullingResults, ctx.hdCamera.camera)
         {
             rendererConfiguration = PerObjectData.None,
             renderQueueRange = RenderQueueRange.transparent,
@@ -47,7 +47,7 @@ class ScreenSpaceCameraUIBlur : CustomPass
             layerMask = uiLayer,
         };
 
-        CoreUtils.DrawRendererList(ctx.renderContext, ctx.cmd, RendererList.Create(result));
+        CoreUtils.DrawRendererList(ctx.renderContext, ctx.cmd, ctx.renderContext.CreateRendererList(result));
     }
 
     protected override void Cleanup()

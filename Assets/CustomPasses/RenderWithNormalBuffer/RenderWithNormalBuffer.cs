@@ -33,7 +33,7 @@ class RenderWithNormalBuffer : CustomPass
         bool isDepthNormal = injectionPoint == CustomPassInjectionPoint.AfterOpaqueDepthAndNormal;
         var ids = isDepthNormal ? depthPrepassIds : forwardIds;
 
-        var result = new RendererListDesc(ids, ctx.cullingResults, ctx.hdCamera.camera)
+        var result = new UnityEngine.Rendering.RendererUtils.RendererListDesc(ids, ctx.cullingResults, ctx.hdCamera.camera)
         {
             rendererConfiguration = renderConfig,
             renderQueueRange = GetRenderQueueRange(RenderQueueType.AllOpaque),
@@ -52,7 +52,7 @@ class RenderWithNormalBuffer : CustomPass
         }
 
         // Render all the opaque objects in the layer
-        CoreUtils.DrawRendererList(ctx.renderContext, ctx.cmd, RendererList.Create(result));
+        CoreUtils.DrawRendererList(ctx.renderContext, ctx.cmd, ctx.renderContext.CreateRendererList(result));
 
         if (isDepthNormal)
         {
