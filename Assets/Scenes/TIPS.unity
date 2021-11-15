@@ -177,6 +177,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 2
     m_TransformParent: {fileID: 2015941614}
     m_Modifications:
     - target: {fileID: 8040162854802574218, guid: fd157eea35f81404d8a188d264dd86cd,
@@ -295,6 +296,7 @@ PrefabInstance:
       value: Selection
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: fd157eea35f81404d8a188d264dd86cd, type: 3}
 --- !u!224 &648928441 stripped
 RectTransform:
@@ -535,7 +537,7 @@ MonoBehaviour:
         enabled: 0
         targetColorBuffer: 1
         targetDepthBuffer: 1
-        clearFlags: 3
+        clearFlags: 7
         passFoldout: 1
         m_Version: 0
         mesh: {fileID: 0}

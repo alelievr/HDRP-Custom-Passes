@@ -95,7 +95,6 @@
         // Load the camera color buffer at the mip 0 if we're not at the before rendering injection point
         if (_CustomPassInjectionPoint != CUSTOMPASSINJECTIONPOINT_BEFORE_RENDERING)
             color = float4(CustomPassSampleCameraColor(posInput.positionNDC.xy, 0), 1);
-        return color;
 
         // Do some normal and depth based edge detection on the camera buffers.
         float3 edgeDetectColor = EdgeDetect(posInput.positionNDC.xy, 2, 1) * _GlowColor;
