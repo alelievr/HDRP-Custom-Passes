@@ -81,7 +81,7 @@ class SlightBlur : CustomPass
     {
         if (useMask)
         {
-            if (colorCopy == null)
+            if (colorCopy?.rt == null || !colorCopy.rt.IsCreated())
             {
                 var hdrpAsset = (GraphicsSettings.renderPipelineAsset as HDRenderPipelineAsset);
                 var colorBufferFormat = hdrpAsset.currentPlatformRenderPipelineSettings.colorBufferFormat;
@@ -92,7 +92,7 @@ class SlightBlur : CustomPass
                     useDynamicScale: true, name: "Color Copy"
                 );
             }
-            if (maskBuffer == null)
+            if (maskBuffer?.rt == null || !maskBuffer.rt.IsCreated())
             {
                 maskBuffer = RTHandles.Alloc(
                     Vector2.one, TextureXR.slices, dimension: TextureXR.dimension,
@@ -100,7 +100,7 @@ class SlightBlur : CustomPass
                     useDynamicScale: true, name: "Blur Mask"
                 );
             }
-            if (maskDepthBuffer == null)
+            if (maskDepthBuffer?.rt == null || !maskDepthBuffer.rt.IsCreated())
             {
                 maskDepthBuffer = RTHandles.Alloc(
                     Vector2.one, TextureXR.slices, dimension: TextureXR.dimension,
@@ -131,23 +131,6 @@ class SlightBlur : CustomPass
     protected override void AggregateCullingParameters(ref ScriptableCullingParameters cullingParameters, HDCamera hdCamera)
         => cullingParameters.cullingMask |= (uint)maskLayer.value;
 
-    // void DrawMaskObjects(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResult)
-    // {
-    //     // Render the objects in the layer blur mask into a mask buffer with their materials so we keep the alpha-clip and transparency if there is any.
-    //     var result = new RendererListDesc(shaderTags, cullingResult, hdCamera.camera)
-    //     {
-    //         rendererConfiguration = PerObjectData.None,
-    //         renderQueueRange = RenderQueueRange.all,
-    //         sortingCriteria = SortingCriteria.BackToFront,
-    //         excludeObjectMotionVectors = false,
-    //         layerMask = maskLayer,
-    //         stateBlock = ,
-    //     };
-
-    //     CoreUtils.SetRenderTarget(cmd, maskBuffer, maskDepthBuffer, ClearFlag.All);
-    //     HDUtils.DrawRendererList(renderContext, cmd, RendererList.Create(result));
-    // }
-
     // We need the viewport size in our shader because we're using half resolution render targets (and so the _ScreenSize
     // variable in the shader does not match the viewport).
     void SetViewPortSize(CommandBuffer cmd, MaterialPropertyBlock block, RTHandle target)
@@ -162,7 +145,13 @@ class SlightBlur : CustomPass
 
         // Save the non blurred color into a copy if the mask is enabled:
         if (useMask)
-            ctx.cmd.CopyTexture(source, colorCopy);
+        {
+            for (int i = 0; i < source.rt.volumeDepth; i++)
+            {
+                ctx.cmd.CopyTexture(source, i, colorCopy, i);
+
+            }
+        }
 
         var targetBuffer = (useMask) ? downSampleBuffer : source; 
         CustomPassUtils.GaussianBlur(ctx, source, targetBuffer, blurBuffer, radius: radius);
@@ -180,7 +169,7 @@ class SlightBlur : CustomPass
                 compositingProperties.SetTexture(ShaderID._Mask, maskBuffer);
                 compositingProperties.SetTexture(ShaderID._MaskDepth, maskDepthBuffer);
                 compositingProperties.SetFloat(ShaderID._InvertMask, invertMask ? 1 : 0);
-                SetViewPortSize(ctx.cmd, compositingProperties, source);
+                // SetViewPortSize(ctx.cmd, compositingProperties, source);
                 HDUtils.DrawFullScreen(ctx.cmd, compositeMaterial, source, compositingProperties, shaderPassId: 0); // Do not forget the shaderPassId: ! or it won't work
             }
         }

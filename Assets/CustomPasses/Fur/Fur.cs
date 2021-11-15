@@ -63,33 +63,33 @@ class Fur : CustomPass
 
     void DrawObjectToFurify(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResult)
     {
-        var result = new RendererListDesc(shaderTags, cullingResult, hdCamera.camera)
-        {
-            rendererConfiguration = PerObjectData.None,
-            renderQueueRange = RenderQueueRange.all,
-            sortingCriteria = SortingCriteria.BackToFront,
-            excludeObjectMotionVectors = false,
-            overrideMaterial = scatterFurPointsMaterial,
-            overrideMaterialPassIndex = 0,
-            layerMask = furMask,
-        };
+        // var result = new RendererListDesc(shaderTags, cullingResult, hdCamera.camera)
+        // {
+        //     rendererConfiguration = PerObjectData.None,
+        //     renderQueueRange = RenderQueueRange.all,
+        //     sortingCriteria = SortingCriteria.BackToFront,
+        //     excludeObjectMotionVectors = false,
+        //     overrideMaterial = scatterFurPointsMaterial,
+        //     overrideMaterialPassIndex = 0,
+        //     layerMask = furMask,
+        // };
 
-        scatterFurPointsMaterial.SetBuffer("furData", furData);
-        // CoreUtils.SetRenderTarget(cmd, furMask, maskDepthBuffer, ClearFlag.All);
-        CoreUtils.DrawRendererList(renderContext, cmd, RendererList.Create(result));
+        // scatterFurPointsMaterial.SetBuffer("furData", furData);
+        // // CoreUtils.SetRenderTarget(cmd, furMask, maskDepthBuffer, ClearFlag.All);
+        // CoreUtils.DrawRendererList(renderContext, cmd, RendererList.Create(result));
 
-        if (furMesh != null && furMaterial != null)
-        {
-            //Update draw arguments:
-            drawArgs[0] = furMesh.GetIndexCount(0);
-            drawArgs[1] = 100; // this is filled by the geometry shader
-            drawArgs[2] = furMesh.GetIndexStart(0);
-            drawArgs[3] = furMesh.GetBaseVertex(0);
+        // if (furMesh != null && furMaterial != null)
+        // {
+        //     //Update draw arguments:
+        //     drawArgs[0] = furMesh.GetIndexCount(0);
+        //     drawArgs[1] = 100; // this is filled by the geometry shader
+        //     drawArgs[2] = furMesh.GetIndexStart(0);
+        //     drawArgs[3] = furMesh.GetBaseVertex(0);
 
-            drawFurBuffer.SetData(drawArgs);
-            furMaterial.SetBuffer("furData", furData);
-            cmd.DrawMeshInstancedIndirect(furMesh, 0, furMaterial, 0, drawFurBuffer);
-        }
+        //     drawFurBuffer.SetData(drawArgs);
+        //     furMaterial.SetBuffer("furData", furData);
+        //     cmd.DrawMeshInstancedIndirect(furMesh, 0, furMaterial, 0, drawFurBuffer);
+        // }
     }
 
     protected override void Cleanup()

@@ -69,7 +69,7 @@ class VideoPlaybackWithoutTAA : CustomPass
                 CoreUtils.SetRenderTarget(cmd, videoDepthBuffer);
                 CoreUtils.ClearRenderTarget(cmd, ClearFlag.Depth, Color.black);
                 var tags = new ShaderTagId[] { new ShaderTagId("DepthForwardOnly"), new ShaderTagId("DepthOnly") };
-                var result = new RendererListDesc(tags, context.cullingResults, context.hdCamera.camera)
+                var result = new UnityEngine.Rendering.RendererUtils.RendererListDesc(tags, context.cullingResults, context.hdCamera.camera)
                 {
                     rendererConfiguration = PerObjectData.None,
                     renderQueueRange = RenderQueueRange.all,
@@ -78,7 +78,7 @@ class VideoPlaybackWithoutTAA : CustomPass
                     layerMask = fixDepthBufferJitteringMask,
                     // stateBlock = overrideRenderState,
                 };
-                CoreUtils.DrawRendererList(context.renderContext, context.cmd, RendererList.Create(result));
+                CoreUtils.DrawRendererList(context.renderContext, context.cmd, context.renderContext.CreateRendererList(result));
             }
         }
 

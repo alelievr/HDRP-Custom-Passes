@@ -113,17 +113,16 @@ class TIPS : CustomPass
             ctx.cmd.DrawMesh(mesh, trs, tipsMeshMaterial, 0, tipsMeshMaterial.FindPass("ForwardOnly"));
         }
 
-        ctx.propertyBlock.SetTexture("_TIPSBuffer", tipsBuffer);
         ctx.propertyBlock.SetFloat("_EdgeDetectThreshold", edgeDetectThreshold);
         ctx.propertyBlock.SetColor("_GlowColor", glowColor);
         ctx.propertyBlock.SetFloat("_EdgeRadius", (float)edgeRadius);
         ctx.propertyBlock.SetFloat("_BypassMeshDepth", (mesh != null) ? 0 : size);
-        // CustomPassUtils.FullScreenPass(ctx, fullscreenMaterial, compositingPass, tipsBuffer, clearFlag: ClearFlag.Color);
         CoreUtils.SetRenderTarget(ctx.cmd, tipsBuffer, ClearFlag.Color);
         CoreUtils.DrawFullScreen(ctx.cmd, fullscreenMaterial, shaderPassId: compositingPass, properties: ctx.propertyBlock);
 
-        // CustomPassUtils.FullScreenPass(ctx, fullscreenMaterial, blurPass, ctx.cameraColorBuffer);
-        CoreUtils.DrawFullScreen(ctx.cmd, fullscreenMaterial, ctx.cameraColorBuffer, shaderPassId: blurPass, properties: ctx.propertyBlock);
+        ctx.propertyBlock.SetTexture("_TIPSBuffer", tipsBuffer);
+        CoreUtils.SetRenderTarget(ctx.cmd, ctx.cameraColorBuffer);
+        CoreUtils.DrawFullScreen(ctx.cmd, fullscreenMaterial, shaderPassId: blurPass, properties: ctx.propertyBlock);
     }
 
     protected override void Cleanup()
