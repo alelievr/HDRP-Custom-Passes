@@ -3,6 +3,19 @@ using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.Rendering;
 using UnityEngine.Experimental.Rendering;
 
+#if UNITY_EDITOR
+
+using UnityEditor.Rendering.HighDefinition;
+using UnityEditor;
+
+[CustomPassDrawerAttribute(typeof(ScreenSpaceCameraUIBlur))]
+class ScreenSpaceCameraUIBlurEditor : CustomPassDrawer
+{
+    protected override PassUIFlag commonPassUIFlags => PassUIFlag.Name;
+}
+
+#endif
+
 class ScreenSpaceCameraUIBlur : CustomPass
 {
     public float        blurRadius = 10;
@@ -47,7 +60,8 @@ class ScreenSpaceCameraUIBlur : CustomPass
             layerMask = uiLayer,
         };
 
-        CoreUtils.DrawRendererList(ctx.renderContext, ctx.cmd, RendererList.Create(result));
+        CoreUtils.SetRenderTarget(ctx.cmd, ctx.cameraColorBuffer, ctx.customDepthBuffer.Value, ClearFlag.DepthStencil, Color.clear);
+        CoreUtils.DrawRendererList(ctx.renderContext, ctx.cmd, ctx.renderContext.CreateRendererList(result));
     }
 
     protected override void Cleanup()
