@@ -24,6 +24,10 @@ class FPSForeground : CustomPass
 
     const string        kCameraTag = "_FPSForegroundCamera";
 
+    Material            depthClearMaterial;
+
+    RTHandle            trueDepthBuffer;
+
     protected override void AggregateCullingParameters(ref ScriptableCullingParameters cullingParameters, HDCamera hdCamera)
         => cullingParameters.cullingMask |= (uint)foregroundMask.value;
 
@@ -37,6 +41,12 @@ class FPSForeground : CustomPass
             // cam = new GameObject(kCameraTag) { hideFlags = HideFlags.HideAndDontSave };
             cam.AddComponent<Camera>();
         }
+
+        depthClearMaterial = new Material(Shader.Find("Hidden/Renderers/ForegroundDepthClear"));
+
+        var trueDethBuffer = new RenderTargetIdentifier(BuiltinRenderTextureType.Depth);
+
+        trueDepthBuffer = RTHandles.Alloc(trueDethBuffer);
 
         foregroundCamera = cam.GetComponent<Camera>();
     }
@@ -59,14 +69,21 @@ class FPSForeground : CustomPass
 
         var depthTestOverride = new RenderStateBlock(RenderStateMask.Depth)
         {
-            depthState = new DepthState(true, CompareFunction.LessEqual),
+            depthState = new DepthState(false, CompareFunction.Always),
         };
 
+        // TODO: Nuke the depth in the after depth and normal injection point
+        // Override depth to 0 (avoid artifacts with screen-space effects)
+        ctx.cmd.SetRenderTarget(trueDepthBuffer, 0, CubemapFace.Unknown, 0); // TODO: make it work in VR
+        CustomPassUtils.RenderFromCamera(ctx, foregroundCamera, null, null, ClearFlag.None, foregroundMask, overrideMaterial: depthClearMaterial, overrideMaterialIndex: 0);
+        // Render the object color
         CustomPassUtils.RenderFromCamera(ctx, foregroundCamera, ctx.cameraColorBuffer, ctx.cameraDepthBuffer, ClearFlag.None, foregroundMask, overrideRenderState: depthTestOverride);
     }
 
     protected override void Cleanup()
     {
+        trueDepthBuffer.Release();
+        CoreUtils.Destroy(depthClearMaterial);
         // CoreUtils.Destroy(foregroundCamera);
     }
 }

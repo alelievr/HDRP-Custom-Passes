@@ -54,7 +54,7 @@ class SeeThrough : CustomPass
     void RenderObjects(ScriptableRenderContext renderContext, CommandBuffer cmd, Material overrideMaterial, int passIndex, CompareFunction depthCompare, CullingResults cullingResult, HDCamera hdCamera, StencilState? overrideStencil = null)
     {
         // Render the objects in the layer blur mask into a mask buffer with their materials so we keep the alpha-clip and transparency if there is any.
-        var result = new RendererListDesc(shaderTags, cullingResult, hdCamera.camera)
+        var result = new UnityEngine.Rendering.RendererUtils.RendererListDesc(shaderTags, cullingResult, hdCamera.camera)
         {
             rendererConfiguration = PerObjectData.None,
             renderQueueRange = RenderQueueRange.all,
@@ -74,7 +74,7 @@ class SeeThrough : CustomPass
             result.stateBlock = block;
         }
 
-        CoreUtils.DrawRendererList(renderContext, cmd, RendererList.Create(result));
+        CoreUtils.DrawRendererList(renderContext, cmd, renderContext.CreateRendererList(result));
     }
 
     protected override void Cleanup()

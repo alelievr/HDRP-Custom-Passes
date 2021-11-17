@@ -6,7 +6,7 @@
 
     #pragma target 4.5
     #pragma only_renderers d3d11 ps4 xboxone vulkan metal switch
-    #pragma enable_d3d11_debug_symbols
+    // #pragma enable_d3d11_debug_symbols
 
     #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/RenderPass/CustomPass/CustomPassCommon.hlsl"
 
@@ -39,8 +39,6 @@
     float4 _ViewportSize;
     float _InvertMask;
 
-    #pragma enable_d3d11_debug_symbols
-
     // We need to clamp the UVs to avoid bleeding from bigger render tragets (when we have multiple cameras)
     float2 ClampUVs(float2 uv)
     {
@@ -51,12 +49,14 @@
     float2 GetSampleUVs(Varyings varyings)
     {
         float depth = LoadCameraDepth(varyings.positionCS.xy);
-        PositionInputs posInput = GetPositionInput(varyings.positionCS.xy, _ViewportSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
+        PositionInputs posInput = GetPositionInput(varyings.positionCS.xy, _ScreenSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
         return posInput.positionNDC.xy * _RTHandleScale.xy;
     }
 
     float4 CompositeMaskedBlur(Varyings varyings) : SV_Target
     {
+        UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(varyings);
+
         float depth = LoadCameraDepth(varyings.positionCS.xy);
         float2 uv = ClampUVs(varyings.positionCS.xy * _ScreenSize.zw * _RTHandleScale.xy);
 

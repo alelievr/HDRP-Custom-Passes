@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.Rendering;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.Rendering.RendererUtils;
 
 #if UNITY_EDITOR
 using UnityEditor.Rendering.HighDefinition;
@@ -41,7 +42,7 @@ class RenderMotionVectors : CustomPass
         SyncRenderTextureAspect(motionVectorTexture, ctx.hdCamera.camera);
 
         var tags = new ShaderTagId("MotionVectors");
-        var motionVectorRendererListDesc = new RendererListDesc(tags, ctx.cullingResults, ctx.hdCamera.camera)
+        var motionVectorRendererListDesc = new UnityEngine.Rendering.RendererUtils.RendererListDesc(tags, ctx.cullingResults, ctx.hdCamera.camera)
         {
             rendererConfiguration = PerObjectData.MotionVectors,
             renderQueueRange = RenderQueueRange.all,
@@ -54,8 +55,7 @@ class RenderMotionVectors : CustomPass
             CoreUtils.SetRenderTarget(ctx.cmd, new RenderTargetIdentifier[]{ dummy.colorBuffer, motionVectorTexture }, dummy.depthBuffer, ClearFlag.All);
         else
             CoreUtils.SetRenderTarget(ctx.cmd, new RenderTargetIdentifier[]{ motionVectorTexture }, motionVectorTexture.depthBuffer, ClearFlag.All);
-        RendererList motionVectorsRendererList = RendererList.Create(motionVectorRendererListDesc);
-        CoreUtils.DrawRendererList(ctx.renderContext, ctx.cmd, motionVectorsRendererList);
+        CoreUtils.DrawRendererList(ctx.renderContext, ctx.cmd, ctx.renderContext.CreateRendererList(motionVectorRendererListDesc));
     }
 
     void SyncRenderTextureAspect(RenderTexture rt, Camera camera)
