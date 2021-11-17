@@ -49,19 +49,8 @@ class ScreenSpaceCameraUIBlur : CustomPass
 
         CustomPassUtils.GaussianBlur(ctx, ctx.cameraColorBuffer, ctx.cameraColorBuffer, downSampleBuffer, radius: blurRadius);
 
-        ShaderTagId[] litForwardTags = { HDShaderPassNames.s_ForwardOnlyName, HDShaderPassNames.s_ForwardName, HDShaderPassNames.s_SRPDefaultUnlitName };
-
-        var result = new RendererListDesc(litForwardTags, ctx.cullingResults, ctx.hdCamera.camera)
-        {
-            rendererConfiguration = PerObjectData.None,
-            renderQueueRange = RenderQueueRange.transparent,
-            sortingCriteria = SortingCriteria.CommonTransparent,
-            excludeObjectMotionVectors = false,
-            layerMask = uiLayer,
-        };
-
         CoreUtils.SetRenderTarget(ctx.cmd, ctx.cameraColorBuffer, ctx.customDepthBuffer.Value, ClearFlag.DepthStencil, Color.clear);
-        CoreUtils.DrawRendererList(ctx.renderContext, ctx.cmd, ctx.renderContext.CreateRendererList(result));
+        CustomPassUtils.DrawRenderers(ctx, uiLayer, RenderQueueType.Transparent, sorting: SortingCriteria.CommonTransparent);
     }
 
     protected override void Cleanup()
