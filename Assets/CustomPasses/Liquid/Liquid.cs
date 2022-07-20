@@ -41,6 +41,11 @@ class Liquid : CustomPass
     protected override void AggregateCullingParameters(ref ScriptableCullingParameters cullingParameters, HDCamera camera)
         => cullingParameters.cullingMask |= (uint)layerMask.value;
 
+    public override IEnumerable<Material> RegisterMaterialForInspector()
+    {
+        if (transparentFullscreenShader != null)
+            yield return transparentFullscreenShader;
+    }
 
     // It can be used to configure render targets and their clear state. Also to create temporary render target textures.
     // When empty this render pass will render to the active camera render target.

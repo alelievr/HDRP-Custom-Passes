@@ -79,6 +79,9 @@
         float d = saturate((worldPos.z - _SphereSize) / 5.0);
         color.a *= d;
 
+        // Put alpha to 0 for sky
+        color.a *= depth > 0;
+
         // Fade value allow you to increase the strength of the effect while the camera gets closer to the custom pass volume
         float f = 1 - abs(_FadeValue * 2 - 1);
         return float4(color.rgb + f, color.a);
