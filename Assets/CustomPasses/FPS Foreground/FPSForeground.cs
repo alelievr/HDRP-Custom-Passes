@@ -69,15 +69,40 @@ class FPSForeground : CustomPass
 
         var depthTestOverride = new RenderStateBlock(RenderStateMask.Depth)
         {
-            depthState = new DepthState(false, CompareFunction.Always),
+            depthState = new DepthState(false, CompareFunction.LessEqual),
         };
 
         // TODO: Nuke the depth in the after depth and normal injection point
         // Override depth to 0 (avoid artifacts with screen-space effects)
         ctx.cmd.SetRenderTarget(trueDepthBuffer, 0, CubemapFace.Unknown, 0); // TODO: make it work in VR
-        CustomPassUtils.RenderFromCamera(ctx, foregroundCamera, null, null, ClearFlag.None, foregroundMask, overrideMaterial: depthClearMaterial, overrideMaterialIndex: 0);
-        // Render the object color
-        CustomPassUtils.RenderFromCamera(ctx, foregroundCamera, ctx.cameraColorBuffer, ctx.cameraDepthBuffer, ClearFlag.None, foregroundMask, overrideRenderState: depthTestOverride);
+        RenderFromCameraDepthPass(ctx, foregroundCamera, null, null, ClearFlag.None, foregroundMask, overrideMaterial: depthClearMaterial, overrideMaterialIndex: 0);
+
+        // Render the object color or normal + depth depending on the injection point
+        if (injectionPoint == CustomPassInjectionPoint.AfterOpaqueDepthAndNormal)
+            RenderFromCameraDepthPass(ctx, foregroundCamera, ctx.cameraColorBuffer, ctx.cameraDepthBuffer, ClearFlag.None, foregroundMask, overrideRenderState: depthTestOverride);
+        else
+            CustomPassUtils.RenderFromCamera(ctx, foregroundCamera, ctx.cameraColorBuffer, ctx.cameraDepthBuffer, ClearFlag.None, foregroundMask, overrideRenderState: depthTestOverride);
+    }
+
+
+    public void RenderFromCameraDepthPass(in CustomPassContext ctx, Camera view, RTHandle targetColor, RTHandle targetDepth, ClearFlag clearFlag, LayerMask layerMask, CustomPass.RenderQueueType renderQueueFilter = CustomPass.RenderQueueType.All, Material overrideMaterial = null, int overrideMaterialIndex = 0, RenderStateBlock overrideRenderState = default(RenderStateBlock))
+    {
+    ShaderTagId[] depthTags = { HDShaderPassNames.s_DepthForwardOnlyName, HDShaderPassNames.s_DepthOnlyName };
+        if (targetColor != null && targetDepth != null)
+            CoreUtils.SetRenderTarget(ctx.cmd, targetColor, targetDepth, clearFlag);
+        else if (targetColor != null)
+            CoreUtils.SetRenderTarget(ctx.cmd, targetColor, clearFlag);
+        else if (targetDepth != null)
+            CoreUtils.SetRenderTarget(ctx.cmd, targetDepth, clearFlag);
+
+        using (new CustomPassUtils.DisableSinglePassRendering(ctx))
+        {
+            using (new CustomPassUtils.OverrideCameraRendering(ctx, view))
+            {
+                // using (new ProfilingScope(ctx.cmd, renderFromCameraSampler))
+                    CustomPassUtils.DrawRenderers(ctx, depthTags, layerMask, renderQueueFilter, overrideMaterial, overrideMaterialIndex, overrideRenderState);
+            }
+        }
     }
 
     protected override void Cleanup()
