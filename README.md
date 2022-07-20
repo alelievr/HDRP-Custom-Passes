@@ -22,7 +22,7 @@ Features:
 + 2 Pass gaussian blur and a downscale
 + Masking to not blur certain part of the screen using meshes
 
-Source file link for this effect: [SlightBlur.cs](https://github.com/alelievr/HDRP-Custom-Passes/blob/master/Assets/CustomPasses/Blur/SlightBlur.cs) and [Blur.shader](https://github.com/alelievr/HDRP-Custom-Passes/blob/master/Assets/CustomPasses/Blur/Resources/Blur.shader)
+Source file link for this effect: [SlightBlur.cs](https://github.com/alelievr/HDRP-Custom-Passes/blob/master/Assets/CustomPasses/Blur/SlightBlur.cs) and [Blur.shader](https://github.com/alelievr/HDRP-Custom-Passes/blob/master/Assets/CustomPasses/Blur/Resources/CompositeBlur.shader)
 ![SlightBlur](https://user-images.githubusercontent.com/6877923/66118285-47179280-e5d6-11e9-9d92-1e7cc844bf03.gif)
 
 ## Outline Effect:
