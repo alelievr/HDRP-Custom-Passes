@@ -87,7 +87,7 @@ class FPSForeground : CustomPass
 
     public void RenderFromCameraDepthPass(in CustomPassContext ctx, Camera view, RTHandle targetColor, RTHandle targetDepth, ClearFlag clearFlag, LayerMask layerMask, CustomPass.RenderQueueType renderQueueFilter = CustomPass.RenderQueueType.All, Material overrideMaterial = null, int overrideMaterialIndex = 0, RenderStateBlock overrideRenderState = default(RenderStateBlock))
     {
-    ShaderTagId[] depthTags = { HDShaderPassNames.s_DepthForwardOnlyName, HDShaderPassNames.s_DepthOnlyName };
+        ShaderTagId[] depthTags = { HDShaderPassNames.s_DepthForwardOnlyName, HDShaderPassNames.s_DepthOnlyName };
         if (targetColor != null && targetDepth != null)
             CoreUtils.SetRenderTarget(ctx.cmd, targetColor, targetDepth, clearFlag);
         else if (targetColor != null)

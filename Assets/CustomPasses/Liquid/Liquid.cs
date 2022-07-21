@@ -25,7 +25,6 @@ class Liquid : CustomPass
     public Material     transparentFullscreenShader = null;
 
     Material    compositingMaterial;
-    RTHandle    downSampleBuffer;
     RTHandle    blurBuffer;
     Mesh        quad;
 
@@ -54,13 +53,6 @@ class Liquid : CustomPass
     protected override void Setup(ScriptableRenderContext renderContext, CommandBuffer cmd)
     {
         compositingMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/FullScreen/LiquidCompositing"));
-
-        // Allocate the buffers used for the blur in half resolution to save some memory
-        downSampleBuffer = RTHandles.Alloc(
-            Vector2.one * 0.5f, TextureXR.slices, dimension: TextureXR.dimension,
-            colorFormat: GraphicsFormat.R16G16B16A16_SNorm,
-            useDynamicScale: true, name: "DownSampleBuffer"
-        );
 
         blurBuffer = RTHandles.Alloc(
             Vector2.one * 0.5f, TextureXR.slices, dimension: TextureXR.dimension,
@@ -111,10 +103,11 @@ class Liquid : CustomPass
             pass = transparentFullscreenShader.FindPass("ForwardOnly");
 
         // Move the mesh to the far plane of the camera
-        float ForwardDistance = ctx.hdCamera.camera.nearClipPlane + 0.0001f;
+        float forwardDistance = ctx.hdCamera.camera.nearClipPlane + 0.0001f;
+        var transform = ctx.hdCamera.camera.transform;
         var trs = Matrix4x4.TRS(
-            ctx.hdCamera.camera.transform.position + ctx.hdCamera.camera.transform.forward * ForwardDistance,
-            ctx.hdCamera.camera.transform.rotation,
+            transform.position + transform.forward * forwardDistance,
+            transform.rotation,
             Vector3.one);
 
         CoreUtils.SetRenderTarget(ctx.cmd, ctx.cameraColorBuffer, ctx.cameraDepthBuffer);
@@ -125,7 +118,6 @@ class Liquid : CustomPass
     {
         CoreUtils.Destroy(compositingMaterial);
         CoreUtils.Destroy(quad);
-        downSampleBuffer.Release();
         blurBuffer.Release();
     }
 }
