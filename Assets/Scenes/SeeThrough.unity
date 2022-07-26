@@ -632,7 +632,7 @@ GameObject:
   - component: {fileID: 1601137718}
   - component: {fileID: 1601137717}
   m_Layer: 0
-  m_Name: SeeThrough Effect (1)
+  m_Name: SeeThrough Effect - Codeless
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -727,9 +727,9 @@ MonoBehaviour:
         overrideShaderPassName: Forward
         overrideDepthState: 1
         depthCompareFunction: 7
-        depthWrite: 0
+        depthWrite: 1
         overrideStencil: 1
-        stencilReferenceValue: 64
+        stencilReferenceValue: 0
         stencilWriteMask: 192
         stencilReadMask: 192
         stencilCompareFunction: 3
@@ -795,7 +795,7 @@ GameObject:
   - component: {fileID: 2044506933}
   - component: {fileID: 2044506932}
   m_Layer: 0
-  m_Name: SeeThrough Effect
+  m_Name: SeeThrough Effect - Custom Script
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
