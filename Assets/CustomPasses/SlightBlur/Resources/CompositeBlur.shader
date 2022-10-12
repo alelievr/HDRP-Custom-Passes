@@ -48,7 +48,7 @@
 
     float2 GetSampleUVs(Varyings varyings)
     {
-        float depth = LoadCameraDepth(varyings.positionCS.xy);
+        float depth = CustomPassLoadCameraDepth(varyings.positionCS.xy);
         PositionInputs posInput = GetPositionInput(varyings.positionCS.xy, _ScreenSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
         return posInput.positionNDC.xy * _RTHandleScale.xy;
     }
@@ -57,8 +57,8 @@
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(varyings);
 
-        float depth = LoadCameraDepth(varyings.positionCS.xy);
-        float2 uv = ClampUVs(varyings.positionCS.xy * _ScreenSize.zw * _RTHandleScale.xy);
+        float depth = CustomPassLoadCameraDepth(varyings.positionCS.xy);
+        float2 uv = ScaleAndClampCustomPassUV(varyings.positionCS.xy * _ScreenSize.zw);
 
         float4 blurredBuffer = SAMPLE_TEXTURE2D_X_LOD(_Source, s_linear_clamp_sampler, uv, 0).rgba;
         float4 mask = SAMPLE_TEXTURE2D_X_LOD(_Mask, s_linear_clamp_sampler, uv, 0);

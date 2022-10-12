@@ -86,16 +86,16 @@
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(varyings);
 
-        float depth = LoadCameraDepth(varyings.positionCS.xy);
+        float depth = CustomPassLoadCameraDepth(varyings.positionCS.xy);
         PositionInputs posInput = GetPositionInput(varyings.positionCS.xy, _ScreenSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
         float3 viewDirection = GetWorldSpaceNormalizeViewDir(posInput.positionWS);
         
         float d = LoadCustomDepth(posInput.positionSS);
-        float db = LoadCameraDepth(posInput.positionSS);
-        
-        float alphaFactor = (db>d)?_BehindFactor:1;
+        float db = CustomPassLoadCameraDepth(posInput.positionSS);
 
-		float4 c = LoadCustomColor(posInput.positionSS);
+        float alphaFactor = (db > d + 0.001) ? _BehindFactor : 1;
+
+		float4 c = CustomPassLoadCustomColor(posInput.positionSS);
 
         float obj = c.a;
         
@@ -109,7 +109,7 @@
         
         for (uint i=0 ; i<sampleCount ; ++i )
         {
-            outline =  max( SampleCustomColor( posInput.positionNDC + uvOffsetPerPixel * _OutlineWidth * offsets[i] ), outline );
+            outline =  max( CustomPassSampleCustomColor( posInput.positionNDC + uvOffsetPerPixel * _OutlineWidth * offsets[i] ), outline );
         }
 
         float4 o = float4(0,0,0,0);
