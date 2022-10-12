@@ -148,3 +148,12 @@ Custom pass that can copy the following buffers to a render texture:
 ![image](https://user-images.githubusercontent.com/6877923/124479199-524cb300-dda6-11eb-8525-9d009617327f.png)
 
 Source: [Assets/CustomPasses/CopyPass](https://github.com/alelievr/HDRP-Custom-Passes/tree/master/Assets/CustomPasses/CopyPass)
+
+## Screen Space Wetness
+
+Effect that modifies the normal and roughness buffers in screen space to give a "wet" effect to objects.
+Sources: [Assets/CustomPasses/Wetness](https://github.com/alelievr/HDRP-Custom-Passes/tree/master/Assets/CustomPasses/Wetness)
+
+It's also compatible with ShaderGraph using the SubGraph "EncodeIntoToNormalBuffer".
+
+https://user-images.githubusercontent.com/6877923/195407733-1e73b63c-5ba6-488f-829d-d4cb0d0b1412.mp4
