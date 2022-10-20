@@ -69,17 +69,23 @@ class FPSForeground : CustomPass
 
         var depthTestOverride = new RenderStateBlock(RenderStateMask.Depth)
         {
-            depthState = new DepthState(false, CompareFunction.LessEqual),
+            depthState = new DepthState(true, CompareFunction.LessEqual),
         };
 
         // TODO: Nuke the depth in the after depth and normal injection point
         // Override depth to 0 (avoid artifacts with screen-space effects)
-        ctx.cmd.SetRenderTarget(trueDepthBuffer, 0, CubemapFace.Unknown, 0); // TODO: make it work in VR
+        CoreUtils.SetKeyword(ctx.cmd, "WRITE_NORMAL_BUFFER", true);
+        ctx.cmd.SetRenderTarget(ctx.cameraNormalBuffer, trueDepthBuffer, 0, CubemapFace.Unknown, 0); // TODO: make it work in VR
         RenderFromCameraDepthPass(ctx, foregroundCamera, null, null, ClearFlag.None, foregroundMask, overrideMaterial: depthClearMaterial, overrideMaterialIndex: 0);
+        CoreUtils.SetKeyword(ctx.cmd, "WRITE_NORMAL_BUFFER", false);
 
         // Render the object color or normal + depth depending on the injection point
         if (injectionPoint == CustomPassInjectionPoint.AfterOpaqueDepthAndNormal)
-            RenderFromCameraDepthPass(ctx, foregroundCamera, ctx.cameraColorBuffer, ctx.cameraDepthBuffer, ClearFlag.None, foregroundMask, overrideRenderState: depthTestOverride);
+        {
+            CoreUtils.SetKeyword(ctx.cmd, "WRITE_NORMAL_BUFFER", true);
+            RenderFromCameraDepthPass(ctx, foregroundCamera, ctx.cameraNormalBuffer, ctx.cameraDepthBuffer, ClearFlag.None, foregroundMask, overrideRenderState: depthTestOverride);
+            CoreUtils.SetKeyword(ctx.cmd, "WRITE_NORMAL_BUFFER", false);
+        }
         else
             CustomPassUtils.RenderFromCamera(ctx, foregroundCamera, ctx.cameraColorBuffer, ctx.cameraDepthBuffer, ClearFlag.None, foregroundMask, overrideRenderState: depthTestOverride);
     }
