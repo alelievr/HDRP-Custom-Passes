@@ -157,3 +157,9 @@ Sources: [Assets/CustomPasses/Wetness](https://github.com/alelievr/HDRP-Custom-P
 It's also compatible with ShaderGraph using the SubGraph "EncodeIntoToNormalBuffer".
 
 https://user-images.githubusercontent.com/6877923/195407733-1e73b63c-5ba6-488f-829d-d4cb0d0b1412.mp4
+
+## Current Depth To Custom Depth
+
+Duing HDRP rendering, you only have access to the depth buffer that contains all opaque objects, the depth texture is not updated when rendering transparent with depth pre/post passes.
+
+This custom pass copies the current camera depth (up to date with the current injection point) to the custom depth buffer. The custom depth buffer can then be sampled in a fullscreen shader graph using the custom depth node.
