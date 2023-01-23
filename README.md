@@ -163,3 +163,5 @@ https://user-images.githubusercontent.com/6877923/195407733-1e73b63c-5ba6-488f-8
 Duing HDRP rendering, you only have access to the depth buffer that contains all opaque objects, the depth texture is not updated when rendering transparent with depth pre/post passes.
 
 This custom pass copies the current camera depth (up to date with the current injection point) to the custom depth buffer. The custom depth buffer can then be sampled in a fullscreen shader graph using the custom depth node.
+
+Source file for this effect: [CurrentDepthToCustomDepth.cs](https://github.com/alelievr/HDRP-Custom-Passes/blob/master/Assets/CustomPasses/CurrentDepthToCustomDepth/CurrentDepthToCustomDepth.cs) and [CurrentDepthToCustomDepth.shader](https://github.com/alelievr/HDRP-Custom-Passes/blob/master/Assets/CustomPasses/CurrentDepthToCustomDepth/CurrentDepthToCustomDepth.shader).
