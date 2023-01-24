@@ -19,6 +19,8 @@ class CurrentDepthToCustomDepth : CustomPass
     Shader depthToCustomDepthShader;
 
     readonly int currentCameraDepth = Shader.PropertyToID("_CurrentCameraDepth");
+    static readonly int currentCameraDepthMSAA = Shader.PropertyToID("_CurrentCameraDepthMSAA");
+    private static readonly int sampleMSAA = Shader.PropertyToID("_SampleMSAA");
 
     protected override void Setup(ScriptableRenderContext renderContext, CommandBuffer cmd)
     {
@@ -29,7 +31,11 @@ class CurrentDepthToCustomDepth : CustomPass
 
     protected override void Execute(CustomPassContext ctx)
     {
-        depthToCustomDepth.SetTexture(currentCameraDepth, ctx.cameraDepthBuffer);
+        depthToCustomDepth.SetFloat(sampleMSAA, ctx.cameraDepthBuffer.isMSAAEnabled ? 1 : 0);
+        if (ctx.cameraDepthBuffer.isMSAAEnabled)
+            depthToCustomDepth.SetTexture(currentCameraDepthMSAA, ctx.cameraDepthBuffer);
+        else
+            depthToCustomDepth.SetTexture(currentCameraDepth, ctx.cameraDepthBuffer);
         CoreUtils.SetRenderTarget(ctx.cmd, ctx.customDepthBuffer.Value);
         CoreUtils.DrawFullScreen(ctx.cmd, depthToCustomDepth, shaderPassId: 0);
     }
