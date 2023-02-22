@@ -637,7 +637,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1601137717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -689,7 +689,7 @@ MonoBehaviour:
         overrideShaderPassName: Forward
         overrideDepthState: 1
         depthCompareFunction: 4
-        depthWrite: 0
+        depthWrite: 1
         overrideStencil: 1
         stencilReferenceValue: 64
         stencilWriteMask: 192
@@ -729,7 +729,7 @@ MonoBehaviour:
         depthCompareFunction: 7
         depthWrite: 1
         overrideStencil: 1
-        stencilReferenceValue: 0
+        stencilReferenceValue: 64
         stencilWriteMask: 192
         stencilReadMask: 192
         stencilCompareFunction: 3
@@ -800,7 +800,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2044506932
 MonoBehaviour:
   m_ObjectHideFlags: 0
