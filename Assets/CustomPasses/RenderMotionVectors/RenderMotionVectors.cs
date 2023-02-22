@@ -42,7 +42,7 @@ class RenderMotionVectors : CustomPass
         SyncRenderTextureAspect(motionVectorTexture, ctx.hdCamera.camera);
 
         var tags = new ShaderTagId("MotionVectors");
-        var motionVectorRendererListDesc = new UnityEngine.Rendering.RendererUtils.RendererListDesc(tags, ctx.cullingResults, ctx.hdCamera.camera)
+        var motionVectorRendererListDesc = new RendererListDesc(tags, ctx.cullingResults, ctx.hdCamera.camera)
         {
             rendererConfiguration = PerObjectData.MotionVectors,
             renderQueueRange = RenderQueueRange.all,
