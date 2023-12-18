@@ -169,7 +169,7 @@ class SlightBlur : CustomPass
                 compositingProperties.SetTexture(ShaderID._Mask, maskBuffer);
                 compositingProperties.SetTexture(ShaderID._MaskDepth, maskDepthBuffer);
                 compositingProperties.SetFloat(ShaderID._InvertMask, invertMask ? 1 : 0);
-                // SetViewPortSize(ctx.cmd, compositingProperties, source);
+                SetViewPortSize(ctx.cmd, compositingProperties, source);
                 HDUtils.DrawFullScreen(ctx.cmd, compositeMaterial, source, compositingProperties, shaderPassId: 0); // Do not forget the shaderPassId! otherwise it won't work
             }
         }

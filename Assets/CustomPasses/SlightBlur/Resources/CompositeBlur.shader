@@ -39,26 +39,12 @@
     float4 _ViewportSize;
     float _InvertMask;
 
-    // We need to clamp the UVs to avoid bleeding from bigger render tragets (when we have multiple cameras)
-    float2 ClampUVs(float2 uv)
-    {
-        uv = clamp(uv, 0, _RTHandleScale.xy - _ScreenSize.zw * 2); // clamp UV to 1 pixel to avoid bleeding
-        return uv;
-    }
-
-    float2 GetSampleUVs(Varyings varyings)
-    {
-        float depth = LoadCameraDepth(varyings.positionCS.xy);
-        PositionInputs posInput = GetPositionInput(varyings.positionCS.xy, _ScreenSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
-        return posInput.positionNDC.xy * _RTHandleScale.xy;
-    }
-
     float4 CompositeMaskedBlur(Varyings varyings) : SV_Target
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(varyings);
 
         float depth = LoadCameraDepth(varyings.positionCS.xy);
-        float2 uv = ClampUVs(varyings.positionCS.xy * _ScreenSize.zw * _RTHandleScale.xy);
+        float2 uv = varyings.positionCS.xy * _ScreenSize.zw * _RTHandleScale.xy / _DynamicResolutionFullscreenScale.xy;
 
         float4 blurredBuffer = SAMPLE_TEXTURE2D_X_LOD(_Source, s_linear_clamp_sampler, uv, 0).rgba;
         float4 mask = SAMPLE_TEXTURE2D_X_LOD(_Mask, s_linear_clamp_sampler, uv, 0);
