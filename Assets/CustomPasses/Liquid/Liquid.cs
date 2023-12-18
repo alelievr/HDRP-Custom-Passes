@@ -87,7 +87,10 @@ class Liquid : CustomPass
             return;
         }
 
-        CustomPassUtils.DrawRenderers(ctx, layerMask);
+        var overrideDepth = new RenderStateBlock(RenderStateMask.Depth);
+        overrideDepth.depthState = new DepthState(false, CompareFunction.LessEqual);
+        CoreUtils.SetRenderTarget(ctx.cmd, ctx.customColorBuffer.Value, ctx.cameraDepthBuffer); 
+        CustomPassUtils.DrawRenderers(ctx, layerMask, overrideRenderState: overrideDepth);
 
         // Blur the custom buffer:
         var resRadius = radius * ctx.cameraColorBuffer.rtHandleProperties.rtHandleScale.x;
