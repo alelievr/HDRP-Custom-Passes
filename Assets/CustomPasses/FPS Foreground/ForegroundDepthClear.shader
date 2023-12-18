@@ -23,7 +23,6 @@ Shader "Hidden/Renderers/ForegroundDepthClear"
             Blend Off
             ZWrite On 
             ZTest Always 
-            ColorMask 0
 
             Cull Back
 
@@ -56,7 +55,7 @@ Shader "Hidden/Renderers/ForegroundDepthClear"
 
             float4 Frag (float4 vertex : SV_POSITION, out float depth : SV_Depth) : SV_Target
             {
-                depth = 0;
+                depth = 0.1; // Use 1 which is the nearest depth possible, this forces the build light list to process this tile and make the lighting work on the foreground objects.
                 return 0;
             }
 

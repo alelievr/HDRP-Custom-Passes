@@ -26,7 +26,7 @@ class FPSForeground : CustomPass
 
     Material            depthClearMaterial;
 
-    RTHandle            trueDepthBuffer;
+    // RTHandle            trueDepthBuffer;
 
     protected override void AggregateCullingParameters(ref ScriptableCullingParameters cullingParameters, HDCamera hdCamera)
         => cullingParameters.cullingMask |= (uint)foregroundMask.value;
@@ -44,11 +44,20 @@ class FPSForeground : CustomPass
 
         depthClearMaterial = new Material(Shader.Find("Hidden/Renderers/ForegroundDepthClear"));
 
-        var trueDethBuffer = new RenderTargetIdentifier(BuiltinRenderTextureType.Depth);
+        // var trueDethBuffer = new RenderTargetIdentifier(BuiltinRenderTextureType.Depth);
 
-        trueDepthBuffer = RTHandles.Alloc(trueDethBuffer);
+        // trueDepthBuffer = RTHandles.Alloc(trueDethBuffer);
 
         foregroundCamera = cam.GetComponent<Camera>();
+
+    //            var outline = new Outline
+    //    {
+    //        outlineColor = Color.red,
+    //        outlineLayer = LayerMask.GetMask("Outline"),
+    //        threshold = 0,
+    //    };
+    //    CustomPassVolume.RegisterGlobalCustomPass(CustomPassInjectionPoint.BeforePostProcess, outline);
+
     }
 
     protected override void Execute(CustomPassContext ctx)
@@ -72,28 +81,48 @@ class FPSForeground : CustomPass
             depthState = new DepthState(true, CompareFunction.LessEqual),
         };
 
-        // TODO: Nuke the depth in the after depth and normal injection point
-        // Override depth to 0 (avoid artifacts with screen-space effects)
-        CoreUtils.SetKeyword(ctx.cmd, "WRITE_NORMAL_BUFFER", true);
-        ctx.cmd.SetRenderTarget(ctx.cameraNormalBuffer, trueDepthBuffer, 0, CubemapFace.Unknown, 0); // TODO: make it work in VR
-        RenderFromCameraDepthPass(ctx, foregroundCamera, null, null, ClearFlag.None, foregroundMask, overrideMaterial: depthClearMaterial, overrideMaterialIndex: 0);
-        CoreUtils.SetKeyword(ctx.cmd, "WRITE_NORMAL_BUFFER", false);
 
         // Render the object color or normal + depth depending on the injection point
         if (injectionPoint == CustomPassInjectionPoint.AfterOpaqueDepthAndNormal)
         {
+            // Clean the custom depth buffer
+            CoreUtils.SetRenderTarget(ctx.cmd, ctx.customDepthBuffer.Value, ClearFlag.None);
+            CoreUtils.ClearRenderTarget(ctx.cmd, ClearFlag.Depth, Color.black);
+
             CoreUtils.SetKeyword(ctx.cmd, "WRITE_NORMAL_BUFFER", true);
-            RenderFromCameraDepthPass(ctx, foregroundCamera, ctx.cameraNormalBuffer, ctx.cameraDepthBuffer, ClearFlag.None, foregroundMask, overrideRenderState: depthTestOverride);
+            {
+                // Render the object normals with the cleared depth buffer.
+                RenderPassFromCamera(ctx, foregroundCamera, ctx.cameraNormalBuffer, ctx.cameraDepthBuffer, ClearFlag.None, foregroundMask, overrideRenderState: depthTestOverride, renderDepth: true);
+
+                // // Override depth to 0 so that screen space effects don't apply to the foreground objects.
+                // ctx.cmd.SetRenderTarget(ctx.cameraNormalBuffer, trueDepthBuffer, 0, CubemapFace.Unknown, 0); // TODO: make it work in VR
+                // RenderPassFromCamera(ctx, foregroundCamera, null, ctx.cameraDepthBuffer, ClearFlag.None, foregroundMask, overrideMaterial: depthClearMaterial, overrideMaterialIndex: 0, renderDepth: true);
+            }
             CoreUtils.SetKeyword(ctx.cmd, "WRITE_NORMAL_BUFFER", false);
         }
         else
+        {
+            var depthTestOverride2 = new RenderStateBlock(RenderStateMask.Depth)
+            {
+                depthState = new DepthState(false, CompareFunction.Equal),
+            };
+
+            // Before rendering the transparent objects, we render the foreground objects into the color buffer.
             CustomPassUtils.RenderFromCamera(ctx, foregroundCamera, ctx.cameraColorBuffer, ctx.cameraDepthBuffer, ClearFlag.None, foregroundMask, overrideRenderState: depthTestOverride);
+
+            
+            // Finally, clear the motion vectors to avoid ghosting.
+            RenderPassFromCamera(ctx, foregroundCamera, ctx.cameraMotionVectorsBuffer, null, ClearFlag.None, foregroundMask, overrideMaterial: depthClearMaterial, overrideMaterialIndex: 0, renderDepth: true);
+        }
     }
 
+    ProfilingSampler s_RenderFromCameraSampler = new ProfilingSampler("Render From Camera");
 
-    public void RenderFromCameraDepthPass(in CustomPassContext ctx, Camera view, RTHandle targetColor, RTHandle targetDepth, ClearFlag clearFlag, LayerMask layerMask, CustomPass.RenderQueueType renderQueueFilter = CustomPass.RenderQueueType.All, Material overrideMaterial = null, int overrideMaterialIndex = 0, RenderStateBlock overrideRenderState = default(RenderStateBlock))
+    public void RenderPassFromCamera(in CustomPassContext ctx, Camera view, RTHandle targetColor, RTHandle targetDepth, ClearFlag clearFlag, LayerMask layerMask, RenderQueueType renderQueueFilter = RenderQueueType.All, Material overrideMaterial = null, int overrideMaterialIndex = 0, RenderStateBlock overrideRenderState = default(RenderStateBlock), bool renderDepth = true)
     {
         ShaderTagId[] depthTags = { HDShaderPassNames.s_DepthForwardOnlyName, HDShaderPassNames.s_DepthOnlyName };
+        ShaderTagId[] motionTags = { HDShaderPassNames.s_MotionVectorsName, new ShaderTagId("FirstPass") };
+
         if (targetColor != null && targetDepth != null)
             CoreUtils.SetRenderTarget(ctx.cmd, targetColor, targetDepth, clearFlag);
         else if (targetColor != null)
@@ -105,16 +134,15 @@ class FPSForeground : CustomPass
         {
             using (new CustomPassUtils.OverrideCameraRendering(ctx, view))
             {
-                // using (new ProfilingScope(ctx.cmd, renderFromCameraSampler))
-                    CustomPassUtils.DrawRenderers(ctx, depthTags, layerMask, renderQueueFilter, overrideMaterial, overrideMaterialIndex, overrideRenderState);
+                using (new ProfilingScope(ctx.cmd, s_RenderFromCameraSampler))
+                    CustomPassUtils.DrawRenderers(ctx, renderDepth ? depthTags : motionTags, layerMask, renderQueueFilter, overrideMaterial, overrideMaterialIndex, overrideRenderState);
             }
         }
     }
 
     protected override void Cleanup()
     {
-        trueDepthBuffer.Release();
+        // trueDepthBuffer.Release();
         CoreUtils.Destroy(depthClearMaterial);
-        // CoreUtils.Destroy(foregroundCamera);
     }
 }
