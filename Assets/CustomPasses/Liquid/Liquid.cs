@@ -88,7 +88,7 @@ class Liquid : CustomPass
         }
 
         var overrideDepth = new RenderStateBlock(RenderStateMask.Depth);
-        overrideDepth.depthState = new DepthState(false, CompareFunction.LessEqual);
+        overrideDepth.depthState = new DepthState(true, CompareFunction.LessEqual);
         CoreUtils.SetRenderTarget(ctx.cmd, ctx.customColorBuffer.Value, ctx.cameraDepthBuffer); 
         CustomPassUtils.DrawRenderers(ctx, layerMask, overrideRenderState: overrideDepth);
 
