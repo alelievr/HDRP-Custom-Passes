@@ -1,5 +1,5 @@
 # HDRP-Custom-Passes
-A bunch of custom passes made for HDRP. This project have been setup for Unity 2022.1 version with HDRP 13.x.
+A bunch of custom passes made for HDRP. This project have been setup for Unity 2022.3 version with HDRP 14.x.
 
 If you're looking for older versions, you can find them in the git branches: [2020.2/3](https://github.com/alelievr/HDRP-Custom-Passes/tree/2020.2), [2021.2/3](https://github.com/alelievr/HDRP-Custom-Passes/tree/2021.2).
 
