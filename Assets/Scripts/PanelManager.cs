@@ -44,6 +44,11 @@ public class PanelManager : MonoBehaviour {
 
 		GameObject go = FindFirstEnabledSelectable(anim.gameObject);
 
+            if (go is not null)
+            {
+                Debug.Log("");
+            }
+
 		SetSelected(go);
 	}
 

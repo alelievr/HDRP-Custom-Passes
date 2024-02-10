@@ -81,7 +81,6 @@ class FPSForeground : CustomPass
             depthState = new DepthState(true, CompareFunction.LessEqual),
         };
 
-
         // Render the object color or normal + depth depending on the injection point
         if (injectionPoint == CustomPassInjectionPoint.AfterOpaqueDepthAndNormal)
         {
@@ -98,15 +97,18 @@ class FPSForeground : CustomPass
         }
         else
         {
-            var depthTestOverride2 = new RenderStateBlock(RenderStateMask.Depth)
-            {
-                depthState = new DepthState(false, CompareFunction.Equal),
-            };
+                    var depthTestOverride2 = new RenderStateBlock(RenderStateMask.Depth)
+        {
+            depthState = new DepthState(false, CompareFunction.LessEqual),
+        };
+
+            // say that we want to use tile/cluster light loop
+            CoreUtils.SetKeyword(ctx.cmd, "USE_FPTL_LIGHTLIST", false);
+            CoreUtils.SetKeyword(ctx.cmd, "USE_CLUSTERED_LIGHTLIST", true);
 
             // Before rendering the transparent objects, we render the foreground objects into the color buffer.
-            CustomPassUtils.RenderFromCamera(ctx, foregroundCamera, ctx.cameraColorBuffer, ctx.cameraDepthBuffer, ClearFlag.None, foregroundMask, overrideRenderState: depthTestOverride);
+            CustomPassUtils.RenderFromCamera(ctx, foregroundCamera, ctx.cameraColorBuffer, ctx.cameraDepthBuffer, ClearFlag.None, foregroundMask, overrideRenderState: depthTestOverride2);
 
-            
             // Finally, clear the motion vectors to avoid ghosting.
             RenderPassFromCamera(ctx, foregroundCamera, ctx.cameraMotionVectorsBuffer, null, ClearFlag.None, foregroundMask, overrideMaterial: depthClearMaterial, overrideMaterialIndex: 0, renderDepth: true);
         }
