@@ -25,7 +25,7 @@ float RemapDepth(float linearDepth)
 }
 
 void Frag(PackedVaryingsToPS packedInput,
-            out float4 outColor : SV_Target0
+            out float4 moments : SV_Target0
            , out float4 momentZero : SV_Target1
            , out float4 accumulatedColor : SV_Target2
 )
@@ -57,7 +57,7 @@ void Frag(PackedVaryingsToPS packedInput,
     float b0;
     float4 b;
     generateMoments(RemapDepth(posInput.linearDepth), 1 - builtinData.opacity, b0, b);
-    outColor = b;
+    moments = b;
     momentZero = b0;
     accumulatedColor = float4(finalColor.rgb, 1.0); // the alpha of color is the number of overlaping transparent surfaces
 

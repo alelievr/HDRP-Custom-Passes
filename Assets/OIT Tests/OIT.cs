@@ -8,6 +8,7 @@ class OIT : CustomPass
 {
     public LayerMask transparentLayerMask;
     public Material resolveMomentOITMaterial;
+    public Material transparentFogMaterial;
 
     RTHandle momentOIT;
     RTHandle accumulatedColor;
@@ -35,6 +36,9 @@ class OIT : CustomPass
 
     protected override void Execute(CustomPassContext ctx)
     {
+        if (resolveMomentOITMaterial == null)
+            return;
+
         // Implementation of MBOIT: https://momentsingraphics.de/Media/I3D2018/Muenstermann2018-MBOIT.pdf
         // Using 4 power moments and 16 bit quantization: https://momentsingraphics.de/Media/I3D2018/Muenstermann2018-MBOITSupplementary.pdf
 
@@ -44,14 +48,18 @@ class OIT : CustomPass
         Shader.SetGlobalFloat("moment_bias", 6e-5f);
 
         // Render moment and moment zero into the 2 RTs using the transparent depth and transmittance values (section 3.1)
-        CoreUtils.SetRenderTarget(ctx.cmd, new RenderTargetIdentifier[]{ momentOIT, momentZeroOIT, accumulatedColor }, ctx.cameraDepthBuffer, ClearFlag.All, Color.clear);
+        CoreUtils.SetRenderTarget(ctx.cmd, new RenderTargetIdentifier[]{ momentOIT, momentZeroOIT, accumulatedColor }, ctx.cameraDepthBuffer, ClearFlag.Color, Color.clear);
         CustomPassUtils.DrawRenderers(ctx, new ShaderTagId[]{ unlitForwardTagId }, transparentLayerMask);
+        if (transparentFogMaterial != null)
+            CoreUtils.DrawFullScreen(ctx.cmd, transparentFogMaterial, shaderPassId: 0);
 
         // Render transparent objects color (standard shading) and reconstruct the transmittance using the moment buffers (section 3.2)
         ctx.cmd.SetGlobalTexture("_MomentOIT", momentOIT);
         ctx.cmd.SetGlobalTexture("_MomentZeroOIT", momentZeroOIT);
-        CoreUtils.SetRenderTarget(ctx.cmd, resolvedMoments, ClearFlag.All);
+        CoreUtils.SetRenderTarget(ctx.cmd, resolvedMoments, ctx.cameraDepthBuffer, ClearFlag.Color);
         CustomPassUtils.DrawRenderers(ctx, new ShaderTagId[]{ unlitForwardOITTagId }, transparentLayerMask);
+        if (transparentFogMaterial != null)
+            CoreUtils.DrawFullScreen(ctx.cmd, transparentFogMaterial, shaderPassId: 1);
 
         var props = new MaterialPropertyBlock(); 
         props.SetTexture("_MomentOIT", momentOIT);
