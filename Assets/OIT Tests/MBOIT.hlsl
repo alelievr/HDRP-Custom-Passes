@@ -1,8 +1,91 @@
-#pragma once
+/*! \file
+	This header provides the functionality to create the vectors of moments and 
+	to blend surfaces together with an appropriately reconstructed 
+	transmittance. It is needed for both additive passes of moment-based OIT.
+*/
+#ifndef MOMENT_OIT_HLSLI
+#define MOMENT_OIT_HLSLI
 
-// First stage
-void generateMoments(float depth, float transmittance, out float b_0, out float4 b) {
-    float absorbance = -log(transmittance);
+float overestimation;
+float moment_bias;
+
+// CUSTOM CONFIG:
+#define NUM_MOMENTS 4
+#define SINGLE_PRECISION 1
+
+#include "MomentMath.hlsli"
+
+RasterizerOrderedTexture2DArray<float> b0 : register(u0);
+
+// /*! This function handles the actual computation of the new vector of power 
+// 	moments.*/
+// void generatePowerMoments(inout float b_0,
+// 	inout float2 b_even, inout float2 b_odd,
+// 	float depth, float transmittance)
+// {
+// 	float absorbance = -log(transmittance);
+
+// 	float depth_pow2 = depth * depth;
+// 	float depth_pow4 = depth_pow2 * depth_pow2;
+
+// #if SINGLE_PRECISION
+// 	b_0 += absorbance;
+// 	b_even += float2(depth_pow2, depth_pow4) * absorbance;
+// 	b_odd += float2(depth, depth_pow2 * depth) * absorbance;
+// #else // Quantized
+// 	offsetMoments(b_even, b_odd, -1.0);
+// 	b_even *= b_0;
+// 	b_odd *= b_0;
+
+// 	//  New Moments
+// 	float2 b_even_new = float2(depth_pow2, depth_pow4);
+// 	float2 b_odd_new = float2(depth, depth_pow2 * depth);
+// 	float2 b_even_new_q, b_odd_new_q;
+// 	quantizeMoments(b_even_new_q, b_odd_new_q, b_even_new, b_odd_new);
+
+// 	// Combine Moments
+// 	b_0 += absorbance;
+// 	b_even += b_even_new_q * absorbance;
+// 	b_odd += b_odd_new_q * absorbance;
+
+// 	// Go back to interval [0, 1]
+// 	b_even /= b_0;
+// 	b_odd /= b_0;
+// 	offsetMoments(b_even, b_odd, 1.0);
+// #endif
+// }
+
+// /*! This function reads the stored moments from the rasterizer ordered view, 
+// 	calls the appropriate moment-generating function and writes the new moments 
+// 	back to the rasterizer ordered view.*/
+// void generateMoments(float depth, float transmittance, float2 sv_pos)
+// {
+// 	uint3 idx0 = uint3(sv_pos, 0);
+// 	uint3 idx1 = idx0;
+// 	idx1[2] = 1;
+
+// 	// Return early if the surface is fully transparent
+// 	clip(0.9999999f - transmittance);
+
+// 	float b_0 = b0[idx0];
+// 	float4 b_raw = b[idx0];
+
+// 	float2 b_even = b_raw.yw;
+// 	float2 b_odd = b_raw.xz;
+
+// 	generatePowerMoments(b_0, b_even, b_odd, depth, transmittance);
+
+// 	b[idx0] = float4(b_odd.x, b_even.x, b_odd.y, b_even.y);
+// 	b0[idx0] = b_0;
+
+// }
+
+/*! This functions relies on fixed function additive blending to compute the 
+	vector of moments.moment vector. The shader that calls this function must 
+	provide the required render targets.*/
+void generateMoments(float depth, float transmittance, out float b_0, out float4 b)
+{
+	float absorbance = -log(transmittance);
 
 	b_0 = absorbance;
 	float depth_pow2 = depth * depth;
@@ -10,101 +93,38 @@ void generateMoments(float depth, float transmittance, out float b_0, out float4
 	b = float4(depth, depth_pow2, depth_pow2 * depth, depth_pow4) * absorbance;
 }
 
-// Basic fused multiplication and addition. No precision benefit here, only to keep closer to the original implementation
-float fma(float a, float b, float c) {
-    return a*b+c;
-}
+/*! This function is to be called from the shader that composites the 
+	transparent fragments. It reads the moments and calls the appropriate 
+	function to reconstruct the transmittance at the specified depth.*/
+void resolveMoments(out float transmittance_at_depth, out float total_transmittance, float depth, float zeroth_moment, float4 moments)
+{
+	transmittance_at_depth = 1;
+	total_transmittance = 1;
+	
+	float b_0 = zeroth_moment;
+	clip(b_0 - 0.00100050033f);
+	total_transmittance = exp(-b_0);
 
-// Heart of the method. Used in the second stage
-float computeTransmittanceAtDepthFrom4PowerMoments(float b_0, float2 b_even, float2 b_odd, float depth, float bias, float overestimation, float4 bias_vector) {
-    float4 b = float4(b_odd.x, b_even.x, b_odd.y, b_even.y);
-    
-    // Bias input data to avoid artifacts
-    b = lerp(b, bias_vector, bias);
-    float3 z;
-    z[0] = depth;
+	float4 b_1234 = moments;
+#if SINGLE_PRECISION
+	float2 b_even = b_1234.yw;
+	float2 b_odd = b_1234.xz;
 
-    // Compute a Cholesky factorization of the Hankel matrix B storing only non-
-    // trivial entries or related products
-    float L21D11               = fma(-b[0],b[1],b[2]);
-    float D11                  = fma(-b[0],b[0], b[1]);
-    float InvD11               = 1.0f/D11;
-    float L21                  = L21D11*InvD11;
-    float SquaredDepthVariance = fma(-b[1],b[1], b[3]);
-    float D22                  = fma(-L21D11,L21,SquaredDepthVariance);
+	b_even /= b_0;
+	b_odd /= b_0;
 
-    // Obtain a scaled inverse image of bz=(1,z[0],z[0]*z[0])^T
-    float3 c = float3(1.0f,z[0],z[0]*z[0]);
-    
-    // Forward substitution to solve L*c1=bz
-    c[1] -= b.x;
-    c[2] -= b.y+L21*c[1];
-    
-    // Scaling to solve D*c2=c1
-    c[1] *= InvD11;
-    c[2] /= D22;
-    
-    // Backward substitution to solve L^T*c3=c2
-    c[1] -= L21*c[2];
-    c[0] -= dot(c.yz,b.xy);
-    
-    // Solve the quadratic equation c[0]+c[1]*z+c[2]*z^2 to obtain solutions 
-    // z[1] and z[2]
-    float InvC2= 1.0f/c[2];
-    float p    = c[1]*InvC2;
-    float q    = c[0]*InvC2;
-    float D    = (p*p*0.25f)-q;
-    float r    = sqrt(D);
-    z[1] = -p*0.5f-r;
-    z[2] = -p*0.5f+r;
+	const float4 bias_vector = float4(0, 0.375, 0, 0.375);
+#else
+	float2 b_even_q = b_1234.yw;
+	float2 b_odd_q = b_1234.xz;
 
-    // Compute the absorbance by summing the appropriate weights
-    float3 polynomial;
-    float3 weight_factor = float3(overestimation, (z[1] < z[0])?1.0f:0.0f, (z[2] < z[0])?1.0f:0.0f);
-
-    float f0   = weight_factor[0];
-    float f1   = weight_factor[1];
-    float f2   = weight_factor[2];
-    float f01  = (f1-f0)/(z[1]-z[0]);
-    float f12  = (f2-f1)/(z[2]-z[1]);
-    float f012 = (f12-f01)/(z[2]-z[0]);
-
-    polynomial[0] = f012;
-    polynomial[1] = polynomial[0];
-    polynomial[0] = f01-polynomial[0]*z[1];
-    polynomial[2] = polynomial[1];
-    polynomial[1] = polynomial[0]-polynomial[1]*z[0];
-    polynomial[0] = f0-polynomial[0]*z[0];
-
-    float absorbance = polynomial[0] + dot(b.xy, polynomial.yz);
-
-    // Turn the normalized absorbance into transmittance
-    return clamp(exp(-b_0 * absorbance), 0.0, 1.0);
-}
-    
-// Second stage
-void resolveMoments(float zeroth_moment, float4 moments, out float transmittance_at_depth, out float total_transmittance, float depth) {
-    total_transmittance = 1.0;
-    transmittance_at_depth = 1.0;
-
-    float b_0 = zeroth_moment;
-    if(b_0 - 0.00100050033f < 0.0) return;// discard; // In the original code you would discard here
-
-    total_transmittance = exp(-b_0);
-
-    float4 b_1234 = moments;
-    float2 b_even = b_1234.yw;
-    float2 b_odd = b_1234.xz;
-
-    b_even /= b_0;
-    b_odd /= b_0;
-
-    const float4 bias_vector = float4(0.0, 0.375, 0.0, 0.375);
-    
-    float moment_bias = 1e-4;
-    float overestimation = 0.25;
-
-    transmittance_at_depth = computeTransmittanceAtDepthFrom4PowerMoments(b_0, b_even, b_odd, depth, moment_bias, overestimation, bias_vector);
+	// Dequantize the moments
+	float2 b_even;
+	float2 b_odd;
+	offsetAndDequantizeMoments(b_even, b_odd, b_even_q, b_odd_q);
+	const float4 bias_vector = float4(0, 0.628, 0, 0.628);
+#endif
+	transmittance_at_depth = computeTransmittanceAtDepthFrom4PowerMoments(b_0, b_even, b_odd, depth, moment_bias, overestimation, bias_vector);
 }
 
 // Final Compositing (section 3.4)
@@ -117,3 +137,5 @@ float3 CompositeOIT2(float zerothMoment, float3 opaqueColor, float3 resolvedTran
 {
     return exp(-zerothMoment) * opaqueColor + resolvedTransparentColor;
 }
+
+#endif // MOMENT_OIT_HLSLI

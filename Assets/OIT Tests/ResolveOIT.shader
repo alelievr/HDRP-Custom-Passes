@@ -41,10 +41,10 @@ Shader "FullScreen/ResolveOIT"
         //     return float4(opaqueColor, 1);
 
         float transmittanceAtDepth, totalTransmittance; 
-        resolveMoments(zerothMoment, momentData, transmittanceAtDepth, totalTransmittance, 0.1);
+        resolveMoments(transmittanceAtDepth, totalTransmittance, 0.1, zerothMoment, momentData);
  
-        return float4(compositeOIT(opaqueColor, resolvedTransparentColor, totalTransmittance), 1);
-        // return float4(CompositeOIT2(zerothMoment, opaqueColor, resolvedTransparentColor), 1);
+        // return float4(compositeOIT(opaqueColor, resolvedTransparentColor, totalTransmittance), 1);
+        return float4(CompositeOIT2(zerothMoment, opaqueColor, resolvedTransparentColor), 1);
     }
 
     ENDHLSL

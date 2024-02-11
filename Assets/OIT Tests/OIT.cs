@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.Rendering;
 using UnityEngine.Experimental.Rendering;
+using static Unity.Mathematics.math;
 
 class OIT : CustomPass
 {
@@ -36,6 +37,11 @@ class OIT : CustomPass
     {
         // Implementation of MBOIT: https://momentsingraphics.de/Media/I3D2018/Muenstermann2018-MBOIT.pdf
         // Using 4 power moments and 16 bit quantization: https://momentsingraphics.de/Media/I3D2018/Muenstermann2018-MBOITSupplementary.pdf
+
+        // Update global constants:
+        Shader.SetGlobalVector("wrapping_zone_parameters", Vector4.zero); // required for trigonometric moment s we don't need it
+        Shader.SetGlobalFloat("overestimation", 0.25f); // This value probably works well
+        Shader.SetGlobalFloat("moment_bias", 6e-5f);
 
         // Render moment and moment zero into the 2 RTs using the transparent depth and transmittance values (section 3.1)
         CoreUtils.SetRenderTarget(ctx.cmd, new RenderTargetIdentifier[]{ momentOIT, momentZeroOIT, accumulatedColor }, ctx.cameraDepthBuffer, ClearFlag.All, Color.clear);

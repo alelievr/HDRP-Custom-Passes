@@ -18,6 +18,12 @@ PackedVaryingsType Vert(AttributesMesh inputMesh)
 
 #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Debug/DebugDisplayMaterial.hlsl"
 
+float RemapDepth(float linearDepth)
+{
+    float depth01 = linearDepth / 1000;
+    return depth01 * 2 - 1; // depth between -1 and 1 
+}
+
 void Frag(PackedVaryingsToPS packedInput,
             out float4 outColor : SV_Target0
            , out float4 momentZero : SV_Target1
@@ -50,7 +56,7 @@ void Frag(PackedVaryingsToPS packedInput,
     float4 outResult = ApplyBlendMode(finalColor, builtinData.opacity);
     float b0;
     float4 b;
-    generateMoments(posInput.linearDepth, 1 - builtinData.opacity, b0, b);
+    generateMoments(RemapDepth(posInput.linearDepth), 1 - builtinData.opacity, b0, b);
     outColor = b;
     momentZero = b0;
     accumulatedColor = float4(finalColor.rgb, 1.0); // the alpha of color is the number of overlaping transparent surfaces
@@ -101,7 +107,7 @@ void FragOIT_Resolve(PackedVaryingsToPS packedInput,
     {
         // Reconstruct transmittance from the moments using depth and moments (section 3.2)
         float transmittanceAtDepth, totalTransmittance;
-        resolveMoments(zerothMoment, momentData, transmittanceAtDepth, totalTransmittance, posInput.linearDepth);
+        resolveMoments(transmittanceAtDepth, totalTransmittance, RemapDepth(posInput.linearDepth), zerothMoment, momentData);
     
         outColor = float4(bsdfData.color * builtinData.opacity * transmittanceAtDepth, 1);
     }
