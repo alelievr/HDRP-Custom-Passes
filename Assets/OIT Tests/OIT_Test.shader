@@ -102,6 +102,8 @@ Shader "HDRP/Unlit OIT"
     #pragma target 4.5
     #pragma only_renderers d3d11 playstation xboxone xboxseries vulkan metal switch
 
+    // #pragma enable_d3d11_debug_symbols
+
     //-------------------------------------------------------------------------------------
     // Variant
     //-------------------------------------------------------------------------------------
@@ -150,22 +152,11 @@ Shader "HDRP/Unlit OIT"
             Tags { "LightMode" = "ForwardOnly" }
 
 
-            // Blend [_SrcBlend] [_DstBlend], [_AlphaSrcBlend] [_AlphaDstBlend]
-            // Blend 1 SrcAlpha OneMinusSrcAlpha // target 1 alpha blend required for VT feedback. All other uses will pass 1.
             ZWrite [_ZWrite]
             ZTest [_ZTestDepthEqualForOpaque]
 
             // Additive blending for all channels
             Blend One One
-
-            // Stencil
-            // {
-            //     WriteMask[_StencilWriteMask]
-            //     Ref[_StencilRef]
-            //     Comp Always
-            //     Pass Replace
-            // }
-
             Cull [_CullMode]
 
             HLSLPROGRAM
@@ -195,53 +186,43 @@ Shader "HDRP/Unlit OIT"
             ENDHLSL
         }
 
-        // Pass
-        // {
-        //     Name "ForwardOnly_OIT"
-        //     Tags { "LightMode" = "ForwardOnly" }
+        Pass
+        {
+            Name "ForwardOnly_OIT"
+            Tags { "LightMode" = "ForwardOnly_OIT" }
 
 
-        //     Blend [_SrcBlend] [_DstBlend], [_AlphaSrcBlend] [_AlphaDstBlend]
-        //     Blend 1 SrcAlpha OneMinusSrcAlpha // target 1 alpha blend required for VT feedback. All other uses will pass 1.
-        //     ZWrite [_ZWrite]
-        //     ZTest [_ZTestDepthEqualForOpaque]
+            ZWrite [_ZWrite]
+            ZTest [_ZTestDepthEqualForOpaque]
+            Blend One One
+            Cull [_CullMode]
 
-        //     Stencil
-        //     {
-        //         WriteMask[_StencilWriteMask]
-        //         Ref[_StencilRef]
-        //         Comp Always
-        //         Pass Replace
-        //     }
+            HLSLPROGRAM
 
-        //     Cull [_CullMode]
+            #pragma only_renderers d3d11 playstation xboxone xboxseries vulkan metal switch
+            //enable GPU instancing support
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ DOTS_INSTANCING_ON
 
-        //     HLSLPROGRAM
+            #pragma multi_compile _ DEBUG_DISPLAY
 
-        //     #pragma only_renderers d3d11 playstation xboxone xboxseries vulkan metal switch
-        //     //enable GPU instancing support
-        //     #pragma multi_compile_instancing
-        //     #pragma multi_compile _ DOTS_INSTANCING_ON
+            #ifdef DEBUG_DISPLAY
+            #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Debug/DebugDisplay.hlsl"
+            #endif
 
-        //     #pragma multi_compile _ DEBUG_DISPLAY
+            #define SHADERPASS SHADERPASS_FORWARD_UNLIT
 
-        //     #ifdef DEBUG_DISPLAY
-        //     #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Debug/DebugDisplay.hlsl"
-        //     #endif
+            #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Material.hlsl"
+            #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Unlit/Unlit.hlsl"
+            #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Unlit/ShaderPass/UnlitSharePass.hlsl"
+            #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Unlit/UnlitData.hlsl"
+            #include "ShaderPassForwardUnlit2.hlsl"
 
-        //     #define SHADERPASS SHADERPASS_FORWARD_UNLIT
+            #pragma vertex Vert
+            #pragma fragment FragOIT_Resolve
 
-        //     #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Material.hlsl"
-        //     #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Unlit/Unlit.hlsl"
-        //     #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Unlit/ShaderPass/UnlitSharePass.hlsl"
-        //     #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Unlit/UnlitData.hlsl"
-        //     #include "ShaderPassForwardUnlit2.hlsl"
-
-        //     #pragma vertex Vert
-        //     #pragma fragment FragOIT_Resolve
-
-        //     ENDHLSL
-        // }
+            ENDHLSL
+        }
     }
 
     FallBack "Hidden/HDRP/FallbackError"
