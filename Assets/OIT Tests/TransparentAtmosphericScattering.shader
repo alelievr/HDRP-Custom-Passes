@@ -45,8 +45,7 @@ Shader "FullScreen/TransparentAtmosphericScattering"
         // TODO: support polychromatic opacity in moment, how?
 
         FragOutput output = (FragOutput)0;
-        if (opacity.x > 0) 
-            generateMoments(RemapDepth(posInput.linearDepth), 1 - opacity.x, output.zeroth_moment, output.moments);
+        generateMoments(RemapDepth(posInput.linearDepth), max(0.000001, 1 - opacity.x), output.zeroth_moment, output.moments);
         return output;
     }
 
@@ -77,7 +76,7 @@ Shader "FullScreen/TransparentAtmosphericScattering"
             float transmittanceAtDepth, totalTransmittance;
             resolveMoments(transmittanceAtDepth, totalTransmittance, RemapDepth(posInput.linearDepth), zerothMoment, momentData);
         
-            outColor = float4(color * opacity.x * transmittanceAtDepth, 1);
+            outColor = float4(color * opacity.x * transmittanceAtDepth, opacity.x * transmittanceAtDepth);
         }
 
         return outColor;

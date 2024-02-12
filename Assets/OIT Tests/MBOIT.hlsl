@@ -133,9 +133,10 @@ float3 compositeOIT(float3 opaqueColor, float4 resolvedTransparentColor, float t
     return opaqueColor * totalTransmittance + resolvedTransparentColor.rgb * (1.0 - totalTransmittance);
 }
 
-float3 CompositeOIT2(float zerothMoment, float3 opaqueColor, float3 resolvedTransparentColor)
+float3 CompositeOIT2(float zerothMoment, float3 opaqueColor, float3 resolvedTransparentColor, float transmittance)
 {
-    return exp(-zerothMoment) * opaqueColor + resolvedTransparentColor;
+	float renormalizationFactor = (1 - exp(-zerothMoment)) / transmittance;
+    return exp(-zerothMoment) * opaqueColor + renormalizationFactor * resolvedTransparentColor;
 }
 
 #endif // MOMENT_OIT_HLSLI

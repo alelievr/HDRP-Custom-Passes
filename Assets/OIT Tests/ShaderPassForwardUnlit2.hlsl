@@ -7,6 +7,8 @@
 TEXTURE2D_X(_MomentOIT);
 TEXTURE2D_X(_MomentZeroOIT);
 
+float _DepthDistance;
+
 #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/VertMesh.hlsl"
 
 PackedVaryingsType Vert(AttributesMesh inputMesh)
@@ -20,7 +22,7 @@ PackedVaryingsType Vert(AttributesMesh inputMesh)
 
 float RemapDepth(float linearDepth)
 {
-    float depth01 = linearDepth / 1000;
+    float depth01 = saturate(linearDepth / _DepthDistance);
     return depth01 * 2 - 1; // depth between -1 and 1 
 }
 
@@ -56,7 +58,7 @@ void Frag(PackedVaryingsToPS packedInput,
     float4 outResult = ApplyBlendMode(finalColor, builtinData.opacity);
     float b0;
     float4 b;
-    generateMoments(RemapDepth(posInput.linearDepth), 1 - builtinData.opacity, b0, b);
+    generateMoments(RemapDepth(posInput.linearDepth), max(0.000001, 1 - builtinData.opacity), b0, b);
     moments = b;
     momentZero = b0;
     accumulatedColor = float4(finalColor.rgb, 1.0); // the alpha of color is the number of overlaping transparent surfaces
@@ -108,8 +110,11 @@ void FragOIT_Resolve(PackedVaryingsToPS packedInput,
         // Reconstruct transmittance from the moments using depth and moments (section 3.2)
         float transmittanceAtDepth, totalTransmittance;
         resolveMoments(transmittanceAtDepth, totalTransmittance, RemapDepth(posInput.linearDepth), zerothMoment, momentData);
-    
-        outColor = float4(bsdfData.color * builtinData.opacity * transmittanceAtDepth, 1);
+       
+        // Output renormalization factor for energy conservation during the compositing
+        float renormalizationFactor = builtinData.opacity * transmittanceAtDepth;
+   
+        outColor = float4(bsdfData.color * builtinData.opacity * transmittanceAtDepth, renormalizationFactor);
     }
 }
 

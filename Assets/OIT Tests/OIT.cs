@@ -10,6 +10,8 @@ class OIT : CustomPass
     public Material resolveMomentOITMaterial;
     public Material transparentFogMaterial;
 
+    public float overEstimation;
+
     RTHandle momentOIT;
     RTHandle accumulatedColor;
     RTHandle momentZeroOIT;
@@ -44,8 +46,9 @@ class OIT : CustomPass
 
         // Update global constants:
         Shader.SetGlobalVector("wrapping_zone_parameters", Vector4.zero); // required for trigonometric moment s we don't need it
-        Shader.SetGlobalFloat("overestimation", 0.25f); // This value probably works well
+        Shader.SetGlobalFloat("overestimation", overEstimation); // This value probably works well
         Shader.SetGlobalFloat("moment_bias", 6e-5f);
+        Shader.SetGlobalFloat("_DepthDistance", ctx.hdCamera.camera.farClipPlane - ctx.hdCamera.camera.nearClipPlane);
 
         // Render moment and moment zero into the 2 RTs using the transparent depth and transmittance values (section 3.1)
         CoreUtils.SetRenderTarget(ctx.cmd, new RenderTargetIdentifier[]{ momentOIT, momentZeroOIT, accumulatedColor }, ctx.cameraDepthBuffer, ClearFlag.Color, Color.clear);
