@@ -1,5 +1,10 @@
 Shader "Hidden/FullScreen/ForegroundCompositing"
 {
+    Properties
+    {
+        [HideInInspector]_SrcColorBlendMode("", Float) = 0
+        [HideInInspector]_DstColorBlendMode("", Float) = 0
+    }
     HLSLINCLUDE
 
     #pragma vertex Vert
@@ -38,7 +43,8 @@ Shader "Hidden/FullScreen/ForegroundCompositing"
 
             ZWrite On
             ZTest Always
-            Blend Off
+            Blend 0 [_SrcColorBlendMode] [_DstColorBlendMode]  // Color buffer
+            Blend 1 Off // Motion vectors buffer
             Cull Off
 
             // This stencil block will enable the stencil bit "ExcludeFromTUAndAA" which remove temporal artifacts.

@@ -19,6 +19,7 @@ class FPSForegroundV2 : CustomPass
 {
     public float        fov = 45;
     public LayerMask    foregroundMask;
+    public bool         supportTransparency;
 
     Camera              foregroundCamera;
 
@@ -95,6 +96,17 @@ class FPSForegroundV2 : CustomPass
         // Composite back the foreground layer with the camera buffers, we need to overwrite both depth and color
         // to make sure that screen space effects applied after this pass behave as normally as possible.
         CoreUtils.SetRenderTarget(ctx.cmd, new RenderTargetIdentifier[]{ ctx.cameraColorBuffer, ctx.cameraMotionVectorsBuffer }, ctx.cameraDepthBuffer);
+        if (supportTransparency)
+        {
+            foregroundCompositingMaterial.SetFloat("_SrcColorBlendMode", (int)BlendMode.SrcAlpha);
+            foregroundCompositingMaterial.SetFloat("_DstColorBlendMode", (int)BlendMode.OneMinusSrcAlpha);
+        }
+        else
+        {
+            // Can't disable blending block when using C# properties so we just do an overwriting blend
+            foregroundCompositingMaterial.SetFloat("_SrcColorBlendMode", (int)BlendMode.One);
+            foregroundCompositingMaterial.SetFloat("_DstColorBlendMode", (int)BlendMode.Zero);
+        }
         CoreUtils.DrawFullScreen(ctx.cmd, foregroundCompositingMaterial, shaderPassId: compositingPassIndex);
     }
 
@@ -102,5 +114,6 @@ class FPSForegroundV2 : CustomPass
     {
         var cam = GameObject.Find(kCameraTag);
         Object.DestroyImmediate(cam);
+        CoreUtils.Destroy(foregroundCompositingMaterial);
     }
 }
