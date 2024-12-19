@@ -35,7 +35,7 @@
 
             Stencil
             {
-                Ref -1
+                Ref 255
                 Comp Always
                 WriteMask [_StencilWriteMask]
                 Pass replace
